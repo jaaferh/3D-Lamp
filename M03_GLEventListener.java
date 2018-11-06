@@ -130,7 +130,7 @@ public class M03_GLEventListener implements GLEventListener {
     // Constant Variables
 
     // Lamp
-    float lampScale = 0.7f;
+    float lampScale = 0.3f;
 
     float footLength = 3f * lampScale;
     float footHeight = 1.4f * lampScale;
@@ -189,7 +189,6 @@ public class M03_GLEventListener implements GLEventListener {
     Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
     Shader shader = new Shader(gl, "vs_tt_05.txt", "fs_tt_uncoloured.txt");
     Material material = new Material(new Vec3(0.0f, 0.5f, 0.81f), new Vec3(0.0f, 0.5f, 0.81f), new Vec3(0.3f, 0.3f, 0.3f), 32.0f);
-    System.out.println(material.getSpecular());
     Mat4 modelMatrix = Mat4Transform.scale(floorSize,1f,floorSize);
     floor = new Model(gl, camera, light, shader, material, modelMatrix, mesh, textureId0);
 
@@ -234,7 +233,7 @@ public class M03_GLEventListener implements GLEventListener {
     // LAMP ROOT //
     // LAMP ROOT //
     lampRoot = new NameNode("lamp structure");
-    translateLamp = new TransformNode("translate(0,0,0)", Mat4Transform.translate(0,5.5f,-12.5f));
+    translateLamp = new TransformNode("translate(0,0,0)", Mat4Transform.translate(0.5f,5.5f,-12.5f));
 
     // FOOT //
     // FOOT //
@@ -309,13 +308,16 @@ public class M03_GLEventListener implements GLEventListener {
     // LIGHT //
     light2 = new Light(gl);
     light2.setCamera(camera);
-    float lightTransX = 1f;
-    float lightTransY = 10f;
+    float lightTransX =(lampScale*3f)+(0.5f);
+    float lightTransY =(lampScale*16.6f)-1+(5.5f);
+    float lightTransZ =(lampScale*0f)+(-12.5f);
     TransformNode translateFrontHead = new TransformNode("translate(0.5,7,0)",Mat4Transform.translate(lightTransX,lightTransY,0f));
 
     NameNode lampLight = new NameNode("lamp light");
-
-    // light2.setPosition(lightTransX, lightTransY, 0);
+    // m = Mat4Transform.scale(10,10,10);
+    // m = Mat4.multiply(m, Mat4Transform.translate(1,10f,0));
+    // TransformNode lampLightTransform = new TransformNode("scale(5,5,5);translate(0,0.5,0)", m);
+    light2.setPosition(lightTransX, lightTransY, lightTransZ);
     LightNode cube6Node = new LightNode("Light(6)", light2);
 
 
@@ -348,9 +350,10 @@ public class M03_GLEventListener implements GLEventListener {
                                   translateAboveHead.addChild(afro);
                                     afro.addChild(afroTransform);
                                       afroTransform.addChild(cube5Node);
-                                lampHead.addChild(translateFrontHead);
-                                  translateFrontHead.addChild(lampLight);
-                                    lampLight.addChild(cube6Node);
+                                // lampHead.addChild(translateFrontHead);
+                                //   translateFrontHead.addChild(lampLight);
+                                //     // lampLightTransform.addChild(lampLight);
+                                //       lampLight.addChild(cube6Node);
 
     lampRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
     // lampRoot.print(0, false);
@@ -645,7 +648,7 @@ public class M03_GLEventListener implements GLEventListener {
     // light.setPosition(getLightPosition());  // changing light position each frame
     light.setPosition(new Vec3(15f,15f,15f));
     // light2.setPosition(new Vec3(5f,5f,5f));
-    // light2.render(gl);
+    light2.render(gl);
     light.render(gl);
     floor.render(gl);
     lampRoot.draw(gl);
