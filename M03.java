@@ -64,6 +64,9 @@ public class M03 extends JFrame implements ActionListener {
       b = new JButton("Random Pose");
       b.addActionListener(this);
       p.add(b);
+      b = new JButton("Original Pose");
+      b.addActionListener(this);
+      p.add(b);
       b = new JButton("Disco Time!");
       b.addActionListener(this);
       p.add(b);
@@ -105,6 +108,9 @@ public class M03 extends JFrame implements ActionListener {
     }
     else if (e.getActionCommand().equalsIgnoreCase("Random Pose")) {
       glEventListener.randomPose();
+    }
+    else if (e.getActionCommand().equalsIgnoreCase("Original Pose")) {
+      glEventListener.originPose();
     }
     else if (e.getActionCommand().equalsIgnoreCase("Disco Time!")) {
       playSound("audio\\flying_to_space.wav");

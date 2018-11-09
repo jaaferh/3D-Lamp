@@ -85,15 +85,19 @@ public class M03_GLEventListener implements GLEventListener {
    }
 
    public void randomPose() {
-     rotateAllAngle = rng(-30,55);
-     rotateAll.setTransform(Mat4Transform.rotateAroundZ(rotateAllAngle));
-     rotateSphereBodyAngle = rng(-30,20);
-     rotateSphereBody.setTransform(Mat4Transform.rotateAroundZ(rotateSphereBodyAngle));
-     rotateUpperBranchAngle = rng(-80,0);
-     rotateUpperBranch.setTransform(Mat4Transform.rotateAroundZ(rotateUpperBranchAngle));
-     rotateHeadAngle = rng(-50,50);
-     rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
+     rotateAllAngleNew = rng(-30,55);
+     rotateSphereBodyAngleNew = rng(-30,20);
+     rotateUpperBranchAngleNew = rng(-80,0);
+     rotateHeadAngleNew = rng(-50,50);
+     pose = true;
+     lampRoot.update();
+   }
 
+   public void originPose() {
+     rotateAllAngleNew  = 35;
+     rotateSphereBodyAngleNew = -30;
+     rotateUpperBranchAngleNew = -40;
+     rotateHeadAngleNew = 10;
      lampRoot.update();
    }
 
@@ -113,6 +117,7 @@ public class M03_GLEventListener implements GLEventListener {
    * Now define all the methods to handle the scene.
    * This will be added to in later examples.
    */
+  private Boolean pose = false;
 
   private Camera camera;
   private Mat4 perspective;
@@ -133,6 +138,9 @@ public class M03_GLEventListener implements GLEventListener {
   private float rotateSphereBodyStart = -30, rotateSphereBodyAngle = rotateSphereBodyStart;
   private float rotateUpperAngleStart = -40, rotateUpperBranchAngle = rotateUpperAngleStart;
   private float rotateHeadAngleStart = 10, rotateHeadAngle = rotateHeadAngleStart;
+  private float rotateAllAngleNew, rotateSphereBodyAngleNew, rotateUpperBranchAngleNew, rotateHeadAngleNew;
+
+  private float rotateDiscoAngleStart = 10, rotateDiscoAngle = rotateDiscoAngleStart;
 
   private void initialise(GL3 gl) {
     createRandomNumbers();
@@ -688,6 +696,12 @@ public class M03_GLEventListener implements GLEventListener {
     danceFloor.render(gl);
     updateBranches();
 
+    if (pose) {
+      updatePose();
+    }
+
+
+
   }
 
   private void updateBranches() {
@@ -696,10 +710,42 @@ public class M03_GLEventListener implements GLEventListener {
     // rotateUpperBranchAngle = rotateUpperAngleStart*(float)Math.sin(elapsedTime*0.7f);
     // rotateUpperBranch.setTransform(Mat4Transform.rotateAroundZ(rotateUpperBranchAngle));
     // rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
-    rotateHeadAngle = rotateHeadAngleStart + (float)elapsedTime*50;
-    rotateDisco.setTransform(Mat4Transform.rotateAroundY(rotateHeadAngle));
+    rotateDiscoAngle = rotateDiscoAngleStart + (float)elapsedTime*50;
+    rotateDisco.setTransform(Mat4Transform.rotateAroundY(rotateDiscoAngle));
+    // lampRoot.update(); // IMPORTANT – the scene graph has changed
+    discoRoot.update();
+  }
+
+  private void updatePose() {
+
+    double elapsedTime = getSeconds()-startTime;
+
+    rotateAllAngle = poseCalculation(rotateAllAngle, rotateAllAngleNew, elapsedTime);
+    rotateSphereBodyAngle = poseCalculation(rotateSphereBodyAngle, rotateSphereBodyAngleNew, elapsedTime);
+    rotateUpperBranchAngle = poseCalculation(rotateUpperBranchAngle, rotateUpperBranchAngleNew, elapsedTime);
+    rotateHeadAngle = poseCalculation(rotateHeadAngle, rotateHeadAngleNew, elapsedTime);
+    rotateAll.setTransform(Mat4Transform.rotateAroundZ(rotateAllAngle));
+    rotateSphereBody.setTransform(Mat4Transform.rotateAroundZ(rotateSphereBodyAngle));
+    rotateUpperBranch.setTransform(Mat4Transform.rotateAroundZ(rotateUpperBranchAngle));
+    rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
+
     lampRoot.update(); // IMPORTANT – the scene graph has changed
     discoRoot.update();
+    elapsedTime = 0;
+  }
+
+  private float poseCalculation(float startAngle, float newAngle, double time) {
+    if (startAngle <= newAngle-3) {
+      startAngle = startAngle + (float)(time);
+    }
+    else if (startAngle >= newAngle+3) {
+      startAngle = startAngle - (float)(time);
+    }
+    else if (startAngle >= (newAngle-3) && startAngle <= (newAngle+3)) {
+      startAngle = newAngle;
+    }
+    // System.out.println(startAngle);
+    return startAngle;
   }
 
   // The light's postion is continually being changed, so needs to be calculated for each frame.
