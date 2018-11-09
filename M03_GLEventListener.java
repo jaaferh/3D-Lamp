@@ -84,6 +84,29 @@ public class M03_GLEventListener implements GLEventListener {
      translateX.update(); // IMPORTANT – the scene graph has changed
    }
 
+   public void randomPose() {
+     rotateAllAngle = rng(-30,55);
+     rotateAll.setTransform(Mat4Transform.rotateAroundZ(rotateAllAngle));
+     rotateSphereBodyAngle = rng(-30,20);
+     rotateSphereBody.setTransform(Mat4Transform.rotateAroundZ(rotateSphereBodyAngle));
+     rotateUpperBranchAngle = rng(-80,0);
+     rotateUpperBranch.setTransform(Mat4Transform.rotateAroundZ(rotateUpperBranchAngle));
+     rotateHeadAngle = rng(-50,50);
+     rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
+
+     lampRoot.update();
+   }
+
+   public int rng(int min, int max) {
+     int x = Math.round((float)(Math.random()*((max-min)+1))+min);
+     return x;
+   }
+   //
+   // private void updateLamp() {
+   //   lampRoot.update();
+   // }
+
+
 
   // ***************************************************
   /* THE SCENE
@@ -106,9 +129,9 @@ public class M03_GLEventListener implements GLEventListener {
   private TransformNode translateBooth, rotateBooth;
   private TransformNode translateDisco, rotateDisco;
   private float xPosition = 0;
-  private float rotateAllAngleStart = 25, rotateAllAngle = rotateAllAngleStart;
-  private float rotateSphereBodyStart = 60, rotateSphereBodyAngle = rotateSphereBodyStart;
-  private float rotateUpperAngleStart = -120, rotateUpperBranchAngle = rotateUpperAngleStart;
+  private float rotateAllAngleStart = 35, rotateAllAngle = rotateAllAngleStart;
+  private float rotateSphereBodyStart = -30, rotateSphereBodyAngle = rotateSphereBodyStart;
+  private float rotateUpperAngleStart = -40, rotateUpperBranchAngle = rotateUpperAngleStart;
   private float rotateHeadAngleStart = 10, rotateHeadAngle = rotateHeadAngleStart;
 
   private void initialise(GL3 gl) {
@@ -141,8 +164,8 @@ public class M03_GLEventListener implements GLEventListener {
     float lowBTransX = 0f * lampScale;
     float lowBTransY = 1f * lampScale;
     float lowBTransZ = 0f * lampScale;
-    float upBTransX = 0.5f * lampScale;
-    float upBTransY = 0.1f * lampScale;
+    float upBTransX = 0f * lampScale;
+    float upBTransY = 0.5f * lampScale;
     float upBTransZ = 0f * lampScale;
 
     float sphereScale = 1.4f * lampScale;
@@ -198,9 +221,12 @@ public class M03_GLEventListener implements GLEventListener {
     shader = new Shader(gl, "vs_cube_04.txt", "fs_cube_04.txt");
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
-    sphere = new Model(gl, camera, light, shader, material, modelMatrix, mesh, textureId3, textureId4);
-    sphereAfro = new Model(gl, camera, light, shader, material, modelMatrix, mesh, textureId6);
+    sphere = new Model(gl, camera, light, shader, material, modelMatrix, mesh, textureId3, textureId3);
     sphereLong = new Model(gl, camera, light, shader, material, modelMatrix, mesh, textureId2, textureId4);
+
+    material = new Material(new Vec3(0.1f, 0.1f, 0.1f), new Vec3(0.1f, 0.1f, 0.1f), new Vec3(0.1f, 0.1f, 0.1f), 100.0f);
+    sphereAfro = new Model(gl, camera, light, shader, material, modelMatrix, mesh, textureId6);
+
 
     mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
     shader = new Shader(gl, "vs_cube_04.txt", "fs_cube_04.txt");
@@ -604,10 +630,12 @@ public class M03_GLEventListener implements GLEventListener {
     // DISCO BALL //
     // DISCO BALL //
     // DISCO BALL //
+    TransformNode translateBelowString = new TransformNode("translate(-0.10,7.50,0)",Mat4Transform.translate(discoScale*5f,discoScale*13.5f,0f));
+
     rotateDisco = new TransformNode("rotateAroundY("+rotateHeadAngle+")",Mat4Transform.rotateAroundY(rotateHeadAngle));
     NameNode discoBall = new NameNode("discoBall");
     m = Mat4Transform.scale(discoScale*4f,discoScale*4f,discoScale*4f);
-    m = Mat4.multiply(Mat4Transform.translate(discoScale*5f,discoScale*13.5f,0f), m);
+    m = Mat4.multiply(Mat4Transform.translate(0f,0f,0f), m);
     TransformNode discoBallTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
     ModelNode cube4Disco = new ModelNode("Cube(discoBall)", sphere);
 
@@ -624,10 +652,11 @@ public class M03_GLEventListener implements GLEventListener {
             discoStandH.addChild(discoString);
               discoString.addChild(discoStringTransform);
                 discoStringTransform.addChild(cube3Disco);
-              discoString.addChild(discoBall);
-                // rotateDisco.addChild(discoBall);
-                  discoBall.addChild(discoBallTransform);
-                    discoBallTransform.addChild(cube4Disco);
+              discoString.addChild(translateBelowString);
+                translateBelowString.addChild(rotateDisco);
+                  rotateDisco.addChild(discoBall);
+                    discoBall.addChild(discoBallTransform);
+                      discoBallTransform.addChild(cube4Disco);
 
     discoRoot.update();
 
@@ -648,7 +677,7 @@ public class M03_GLEventListener implements GLEventListener {
     // light.setPosition(getLightPosition());  // changing light position each frame
     light.setPosition(new Vec3(15f,15f,15f));
     // light2.setPosition(new Vec3(5f,5f,5f));
-    light2.render(gl);
+    // light2.render(gl);
     light.render(gl);
     floor.render(gl);
     lampRoot.draw(gl);
@@ -663,11 +692,14 @@ public class M03_GLEventListener implements GLEventListener {
 
   private void updateBranches() {
     double elapsedTime = getSeconds()-startTime;
-    rotateHeadAngle = rotateHeadAngleStart*(float)Math.sin(elapsedTime*13.17);
+    // rotateHeadAngle = rotateHeadAngleStart*(float)Math.sin(elapsedTime*13.17);
     // rotateUpperBranchAngle = rotateUpperAngleStart*(float)Math.sin(elapsedTime*0.7f);
     // rotateUpperBranch.setTransform(Mat4Transform.rotateAroundZ(rotateUpperBranchAngle));
-    rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
+    // rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
+    rotateHeadAngle = rotateHeadAngleStart + (float)elapsedTime*50;
+    rotateDisco.setTransform(Mat4Transform.rotateAroundY(rotateHeadAngle));
     lampRoot.update(); // IMPORTANT – the scene graph has changed
+    discoRoot.update();
   }
 
   // The light's postion is continually being changed, so needs to be calculated for each frame.
