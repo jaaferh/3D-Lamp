@@ -67,22 +67,22 @@ public class M03_GLEventListener implements GLEventListener {
    *
    */
 
-   public void incXPosition() {
-     xPosition += 0.5f;
-     if (xPosition>5f) xPosition = 5f;
-     updateX();
-   }
-
-   public void decXPosition() {
-     xPosition -= 0.5f;
-     if (xPosition<-5f) xPosition = -5f;
-     updateX();
-   }
-
-   private void updateX() {
-     translateX.setTransform(Mat4Transform.translate(xPosition,0,0));
-     translateX.update(); // IMPORTANT – the scene graph has changed
-   }
+   // public void incXPosition() {
+   //   xPosition += 0.5f;
+   //   if (xPosition>5f) xPosition = 5f;
+   //   updateX();
+   // }
+   //
+   // public void decXPosition() {
+   //   xPosition -= 0.5f;
+   //   if (xPosition<-5f) xPosition = -5f;
+   //   updateX();
+   // }
+   //
+   // private void updateX() {
+   //   translateX.setTransform(Mat4Transform.translate(xPosition,0,0));
+   //   translateX.update(); // IMPORTANT – the scene graph has changed
+   // }
 
    public void randomPose() {
      rotateAllAngleNew = rng(-30,55);
@@ -109,11 +109,90 @@ public class M03_GLEventListener implements GLEventListener {
      int x = Math.round((float)(Math.random()*((max-min)+1))+min);
      return x;
    }
-   //
-   // private void updateLamp() {
-   //   lampRoot.update();
-   // }
 
+   public void jump() {
+     int rngAngleX = rng((int)rotateFootAngleNew-45, (int)rotateFootAngleNew+45);
+     int rngAngleZ = (rngAngleX - 90)*-1;
+
+     if (rngAngleX > 180) {
+       int a = rngAngleX - 180;
+       int b = 180 - a;
+       rngAngleX = -1 * b;
+     }
+     else if (rngAngleX < -180) {
+       int a = rngAngleX * -1;
+       int b = a - 180;
+       rngAngleX = 180 - b;
+     }
+
+     if (rngAngleZ > 180) {
+       int c = rngAngleZ - 180;
+       int d = 180 - c;
+       rngAngleZ = -1 * d;
+     }
+     else if (rngAngleZ < -180) {
+       int c = rngAngleZ * -1;
+       int d = c - 180;
+       rngAngleZ = 180 - d;
+     }
+
+
+     double rngAngleXRad = Math.toRadians(rngAngleX);
+     double rngAngleZRad = Math.toRadians(rngAngleZ);
+     double angleCosX = Math.cos(rngAngleXRad);
+     double angleCosZ = Math.cos(rngAngleZRad);
+
+     double length = 1.0;
+     double lampTransXNew = ((angleCosX/length)*(Math.pow(length,2)));
+     double lampTransZNew = ((angleCosZ/length)*(Math.pow(length,2)));
+
+     rotateFootAngleNew = (float)rngAngleX;
+     rotateFootAngle = rotateFootAngleNew;
+
+     if (lampTransX <= 7 && lampTransX >= -8 && lampTransZ >= -18 && lampTransZ <= -6) {
+       lampTransX += (float)lampTransXNew;
+       lampTransZ += (float)(lampTransZNew*-1);
+     }
+     else if (lampTransX > 7) {
+       lampTransX += -1;
+       jump();
+     }
+     else if (lampTransX < -8 ) {
+       lampTransX += 1;
+       jump();
+     }
+     else if (lampTransZ > -6) {
+       lampTransZ += -1;
+       jump();
+     }
+     else if (lampTransZ < -18) {
+       lampTransZ += 1;
+       jump();
+     }
+
+     rotateFoot.setTransform(Mat4Transform.rotateAroundY(rotateFootAngle));
+     translateLamp.setTransform(Mat4Transform.translate(lampTransX,lampTransY,lampTransZ));
+
+     System.out.println(rngAngleX);
+     System.out.println(rngAngleZ);
+     System.out.println(lampTransXNew);
+     System.out.println(lampTransZNew);
+
+     System.out.println(lampTransX);
+
+     lampRoot.update();
+   }
+
+   public void originalPosition() {
+     lampTransX = 0.5f;
+     lampTransY = 5.5f;
+     lampTransZ = -12.5f;
+     rotateFootAngleNew = rotateFootAngle = rotateFootAngleStart;
+
+     rotateFoot.setTransform(Mat4Transform.rotateAroundY(rotateFootAngle));
+     translateLamp.setTransform(Mat4Transform.translate(lampTransX,lampTransY,lampTransZ));
+     lampRoot.update();
+   }
 
 
   // ***************************************************
@@ -132,19 +211,29 @@ public class M03_GLEventListener implements GLEventListener {
 
 
   private TransformNode translateX, translateLamp;
-  private TransformNode rotateAll, rotateSphereBody, rotateUpperBranch, rotateHead;
+  private TransformNode rotateFoot, rotateAll, rotateSphereBody, rotateUpperBranch, rotateHead;
   private TransformNode translateWall;
   private TransformNode translateTable;
   private TransformNode translateBooth, rotateBooth;
   private TransformNode translateDisco, rotateDisco;
   private float xPosition = 0;
+  private float rotateFootAngleStart = -15, rotateFootAngle = rotateFootAngleStart;
   private float rotateAllAngleStart = 35, rotateAllAngle = rotateAllAngleStart;
   private float rotateSphereBodyStart = -30, rotateSphereBodyAngle = rotateSphereBodyStart;
   private float rotateUpperAngleStart = -40, rotateUpperBranchAngle = rotateUpperAngleStart;
   private float rotateHeadAngleStart = 10, rotateHeadAngle = rotateHeadAngleStart;
+  private float rotateDiscoAngleStart = 10, rotateDiscoAngle = rotateDiscoAngleStart;
   private float rotateAllAngleNew, rotateSphereBodyAngleNew, rotateUpperBranchAngleNew, rotateHeadAngleNew;
 
-  private float rotateDiscoAngleStart = 10, rotateDiscoAngle = rotateDiscoAngleStart;
+  private float lampTransX = 0.5f;
+  private float lampTransY = 5.5f;
+  private float lampTransZ = -12.5f;
+
+  private float lampTransXNew, lampTransYNew, lampTransZNew;
+
+  private float rotateFootAngleNew = rotateFootAngleStart;
+
+
 
   private void initialise(GL3 gl) {
     createRandomNumbers();
@@ -167,9 +256,9 @@ public class M03_GLEventListener implements GLEventListener {
     // Lamp
     float lampScale = 0.3f;
 
-    float footLength = 3f * lampScale;
+    float footLength = 5f * lampScale;
     float footHeight = 1.4f * lampScale;
-    float footDepth = 1.4f * lampScale;
+    float footDepth = 3f * lampScale;
 
     float branchLength = 7f * lampScale;
     float branchThick = 1f * lampScale;
@@ -271,7 +360,8 @@ public class M03_GLEventListener implements GLEventListener {
     // LAMP ROOT //
     // LAMP ROOT //
     lampRoot = new NameNode("lamp structure");
-    translateLamp = new TransformNode("translate(0,0,0)", Mat4Transform.translate(0.5f,5.5f,-12.5f));
+    translateLamp = new TransformNode("translate(0,0,0)", Mat4Transform.translate(lampTransX,lampTransY,lampTransZ));
+    rotateFoot = new TransformNode("rotateAroundY("+rotateFootAngle+")", Mat4Transform.rotateAroundY(rotateFootAngle));
 
     // FOOT //
     // FOOT //
@@ -361,37 +451,38 @@ public class M03_GLEventListener implements GLEventListener {
 
     // lampRoot
     lampRoot.addChild(translateLamp);
-      translateLamp.addChild(lampFoot);
-        lampFoot.addChild(lampFootTransform);
-          lampFootTransform.addChild(cube0Node);
-        lampFoot.addChild(translateAboveFoot);
-          translateAboveFoot.addChild(rotateAll);
-            rotateAll.addChild(lowerBranch);
-              lowerBranch.addChild(lowerBranchTransform);
-                lowerBranchTransform.addChild(cube1Node);
-              lowerBranch.addChild(translateAboveLowBranch);
-                translateAboveLowBranch.addChild(rotateSphereBody);
-                  rotateSphereBody.addChild(sphereBody);
-                    sphereBody.addChild(sphereBodyTransform);
-                      sphereBodyTransform.addChild(cube2Node);
-                    sphereBody.addChild(translateAboveSphereBody);
-                      translateAboveSphereBody.addChild(rotateUpperBranch);
-                        rotateUpperBranch.addChild(upperBranch);
-                          upperBranch.addChild(upperBranchTransform);
-                            upperBranchTransform.addChild(cube3Node);
-                          upperBranch.addChild(translateAboveUpperBranch);
-                            translateAboveUpperBranch.addChild(rotateHead);
-                              rotateHead.addChild(lampHead);
-                                lampHead.addChild(lampHeadTransform);
-                                  lampHeadTransform.addChild(cube4Node);
-                                lampHead.addChild(translateAboveHead);
-                                  translateAboveHead.addChild(afro);
-                                    afro.addChild(afroTransform);
-                                      afroTransform.addChild(cube5Node);
-                                // lampHead.addChild(translateFrontHead);
-                                //   translateFrontHead.addChild(lampLight);
-                                //     // lampLightTransform.addChild(lampLight);
-                                //       lampLight.addChild(cube6Node);
+      translateLamp.addChild(rotateFoot);
+        rotateFoot.addChild(lampFoot);
+          lampFoot.addChild(lampFootTransform);
+            lampFootTransform.addChild(cube0Node);
+          lampFoot.addChild(translateAboveFoot);
+            translateAboveFoot.addChild(rotateAll);
+              rotateAll.addChild(lowerBranch);
+                lowerBranch.addChild(lowerBranchTransform);
+                  lowerBranchTransform.addChild(cube1Node);
+                lowerBranch.addChild(translateAboveLowBranch);
+                  translateAboveLowBranch.addChild(rotateSphereBody);
+                    rotateSphereBody.addChild(sphereBody);
+                      sphereBody.addChild(sphereBodyTransform);
+                        sphereBodyTransform.addChild(cube2Node);
+                      sphereBody.addChild(translateAboveSphereBody);
+                        translateAboveSphereBody.addChild(rotateUpperBranch);
+                          rotateUpperBranch.addChild(upperBranch);
+                            upperBranch.addChild(upperBranchTransform);
+                              upperBranchTransform.addChild(cube3Node);
+                            upperBranch.addChild(translateAboveUpperBranch);
+                              translateAboveUpperBranch.addChild(rotateHead);
+                                rotateHead.addChild(lampHead);
+                                  lampHead.addChild(lampHeadTransform);
+                                    lampHeadTransform.addChild(cube4Node);
+                                  lampHead.addChild(translateAboveHead);
+                                    translateAboveHead.addChild(afro);
+                                      afro.addChild(afroTransform);
+                                        afroTransform.addChild(cube5Node);
+                                  // lampHead.addChild(translateFrontHead);
+                                  //   translateFrontHead.addChild(lampLight);
+                                  //     // lampLightTransform.addChild(lampLight);
+                                  //       lampLight.addChild(cube6Node);
 
     lampRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
     // lampRoot.print(0, false);
@@ -735,8 +826,6 @@ public class M03_GLEventListener implements GLEventListener {
 
     lampRoot.update(); // IMPORTANT – the scene graph has changed
     discoRoot.update();
-    System.out.println(elapsedTime);
-    // elapsedTime = 0;
   }
 
   private float poseCalculation(float startAngle, float newAngle, double time) {
@@ -749,7 +838,6 @@ public class M03_GLEventListener implements GLEventListener {
     else if (startAngle >= (newAngle-3) && startAngle <= (newAngle+3)) {
       startAngle = newAngle;
     }
-    // System.out.println(startAngle);
     return startAngle;
   }
 
