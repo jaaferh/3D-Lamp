@@ -101,6 +101,10 @@ public class M03_GLEventListener implements GLEventListener {
      lampRoot.update();
    }
 
+   public void buttonTime() {
+     buttonTime = getSeconds();
+   }
+
    public int rng(int min, int max) {
      int x = Math.round((float)(Math.random()*((max-min)+1))+min);
      return x;
@@ -718,7 +722,7 @@ public class M03_GLEventListener implements GLEventListener {
 
   private void updatePose() {
 
-    double elapsedTime = getSeconds()-startTime;
+    double elapsedTime = getSeconds()-buttonTime;
 
     rotateAllAngle = poseCalculation(rotateAllAngle, rotateAllAngleNew, elapsedTime);
     rotateSphereBodyAngle = poseCalculation(rotateSphereBodyAngle, rotateSphereBodyAngleNew, elapsedTime);
@@ -731,15 +735,16 @@ public class M03_GLEventListener implements GLEventListener {
 
     lampRoot.update(); // IMPORTANT – the scene graph has changed
     discoRoot.update();
-    elapsedTime = 0;
+    System.out.println(elapsedTime);
+    // elapsedTime = 0;
   }
 
   private float poseCalculation(float startAngle, float newAngle, double time) {
     if (startAngle <= newAngle-3) {
-      startAngle = startAngle + (float)(time);
+      startAngle = startAngle + (float)(time*6);
     }
     else if (startAngle >= newAngle+3) {
-      startAngle = startAngle - (float)(time);
+      startAngle = startAngle - (float)(time*6);
     }
     else if (startAngle >= (newAngle-3) && startAngle <= (newAngle+3)) {
       startAngle = newAngle;
@@ -763,6 +768,7 @@ public class M03_GLEventListener implements GLEventListener {
    */
 
   private double startTime;
+  private double buttonTime;
 
   private double getSeconds() {
     return System.currentTimeMillis()/1000.0;
