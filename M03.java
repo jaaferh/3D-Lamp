@@ -121,6 +121,7 @@ public class M03 extends JFrame implements ActionListener {
       glEventListener.originPose();
     }
     else if (e.getActionCommand().equalsIgnoreCase("Jump")) {
+      glEventListener.buttonTime();
       glEventListener.jump();
     }
     else if (e.getActionCommand().equalsIgnoreCase("Original Position")) {

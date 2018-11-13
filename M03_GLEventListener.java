@@ -111,7 +111,7 @@ public class M03_GLEventListener implements GLEventListener {
    }
 
    public void jump() {
-     int rngAngleX = rng((int)rotateFootAngleNew-45, (int)rotateFootAngleNew+45);
+     int rngAngleX = rng((int)rotateFootAngleNew-100, (int)rotateFootAngleNew+100);
      int rngAngleZ = (rngAngleX - 90)*-1;
 
      if (rngAngleX > 180) {
@@ -147,7 +147,12 @@ public class M03_GLEventListener implements GLEventListener {
      double lampTransZNew = ((angleCosZ/length)*(Math.pow(length,2)));
 
      rotateFootAngleNew = (float)rngAngleX;
-     rotateFootAngle = rotateFootAngleNew;
+     rotateAllAngleNew = 50;
+     rotateSphereBodyAngleNew = -50;
+     rotateUpperBranchAngleNew = -60;
+     rotateHeadAngleNew = 70;
+
+
 
      if (lampTransX <= 7 && lampTransX >= -8 && lampTransZ >= -18 && lampTransZ <= -6) {
        lampTransX += (float)lampTransXNew;
@@ -170,18 +175,19 @@ public class M03_GLEventListener implements GLEventListener {
        jump();
      }
 
-     rotateFoot.setTransform(Mat4Transform.rotateAroundY(rotateFootAngle));
-     translateLamp.setTransform(Mat4Transform.translate(lampTransX,lampTransY,lampTransZ));
-
-     System.out.println(rngAngleX);
-     System.out.println(rngAngleZ);
-     System.out.println(lampTransXNew);
-     System.out.println(lampTransZNew);
-
-     System.out.println(lampTransX);
-
+     move = true;
      lampRoot.update();
    }
+
+   public void jumpingPose() {
+     rotateAllAngleNew = 10;
+     rotateSphereBodyAngleNew = -10;
+     rotateUpperBranchAngleNew = -10;
+     rotateHeadAngleNew = 70;
+     lampRoot.update();
+   }
+
+
 
    public void originalPosition() {
      lampTransX = 0.5f;
@@ -201,6 +207,7 @@ public class M03_GLEventListener implements GLEventListener {
    * This will be added to in later examples.
    */
   private Boolean pose = false;
+  private Boolean move = false;
 
   private Camera camera;
   private Mat4 perspective;
@@ -795,7 +802,9 @@ public class M03_GLEventListener implements GLEventListener {
       updatePose();
     }
 
-
+    if (move) {
+      updateFootAngle();
+    }
 
   }
 
@@ -809,6 +818,33 @@ public class M03_GLEventListener implements GLEventListener {
     rotateDisco.setTransform(Mat4Transform.rotateAroundY(rotateDiscoAngle));
     // lampRoot.update(); // IMPORTANT – the scene graph has changed
     discoRoot.update();
+  }
+
+  private void updateFootAngle() {
+    double elapsedTime = getSeconds()-buttonTime;
+    rotateFootAngle = poseCalculation(rotateFootAngle, rotateFootAngleNew, elapsedTime);
+    rotateAllAngle = poseCalculation(rotateAllAngle, rotateAllAngleNew, elapsedTime);
+    rotateSphereBodyAngle = poseCalculation(rotateSphereBodyAngle, rotateSphereBodyAngleNew, elapsedTime);
+    rotateUpperBranchAngle = poseCalculation(rotateUpperBranchAngle, rotateUpperBranchAngleNew, elapsedTime);
+    rotateHeadAngle = poseCalculation(rotateHeadAngle, rotateHeadAngleNew, elapsedTime);
+    rotateAll.setTransform(Mat4Transform.rotateAroundZ(rotateAllAngle));
+    rotateSphereBody.setTransform(Mat4Transform.rotateAroundZ(rotateSphereBodyAngle));
+    rotateUpperBranch.setTransform(Mat4Transform.rotateAroundZ(rotateUpperBranchAngle));
+    rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
+    rotateFoot.setTransform(Mat4Transform.rotateAroundY(rotateFootAngle));
+
+    if (rotateFootAngle >= rotateFootAngleNew-3 && rotateFootAngle <= rotateFootAngleNew+3) {
+      if (lampTransY >= 5.5f) {
+        lampTransY = lampTransY + (lampTransY*(float)Math.sin(elapsedTime*2f))/100;
+        if (lampTransY < 5.5f) {
+          lampTransY = 5.5f;
+        }
+        translateLamp.setTransform(Mat4Transform.translate(lampTransX,lampTransY,lampTransZ));
+        originPose();
+      }
+      jumpingPose();
+    }
+    lampRoot.update();
   }
 
   private void updatePose() {
@@ -825,7 +861,6 @@ public class M03_GLEventListener implements GLEventListener {
     rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
 
     lampRoot.update(); // IMPORTANT – the scene graph has changed
-    discoRoot.update();
   }
 
   private float poseCalculation(float startAngle, float newAngle, double time) {
