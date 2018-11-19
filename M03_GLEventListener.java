@@ -189,6 +189,8 @@ public class M03_GLEventListener implements GLEventListener {
      rotateSphereBodyAngleNew = -10;
      rotateUpperBranchAngleNew = -10;
      rotateHeadAngleNew = 70;
+     pose = true;
+     move = false;
      lampRoot.update();
    }
 
@@ -213,6 +215,7 @@ public class M03_GLEventListener implements GLEventListener {
    */
   private Boolean pose = false;
   private Boolean move = false;
+  private Boolean jumpV = false;
 
   private Camera camera;
   private Mat4 perspective;
@@ -811,6 +814,11 @@ public class M03_GLEventListener implements GLEventListener {
       updateFootAngle();
     }
 
+    if (jumpV) {
+      jumpVertical();
+      jumpHorizontal();
+    }
+
   }
 
   private void updateBranches() {
@@ -840,30 +848,37 @@ public class M03_GLEventListener implements GLEventListener {
     rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
     rotateFoot.setTransform(Mat4Transform.rotateAroundY(rotateFootAngle));
 
-
-    // if (rotateFootAngle == rotateFootAngleNew) {
-    //   translateLamp.setTransform(Mat4Transform.translate(lampTransX,lampTransY,lampTransZ));
-    //   jumpingPose();
-    // }
-
     if (rotateFootAngle >= rotateFootAngleNew-3 && rotateFootAngle <= rotateFootAngleNew+3) {
-      if (lampTransY == 5.5f) {
-        elapsedTime -= elapsedTime-0.1;
-      }
-      if (lampTransY >= 5.5f) {
-        System.out.println(elapsedTime);
-        lampTransY = lampTransY + (lampTransY*(float)Math.sin(elapsedTime*6f))/100;
-        if (lampTransY < 5.5f) {
-          lampTransY = 5.49f;
-        }
-        translateLamp.setTransform(Mat4Transform.translate(lampTransX,lampTransY,lampTransZ));
-      }
-      jumpingPose();
+      move = false;
+      jumpV = true;
+      jumpTime = getSeconds();
     }
 
-    if (lampTransY < 5.5f) {
-      originPose();
+    lampRoot.update();
+  }
+
+  private void jumpVertical() {
+    double elapsedTime = getSeconds()- buttonTime;
+
+    if (lampTransY >= 5.5f) {
+      System.out.println(elapsedTime);
+      System.out.println(lampTransY);
+      jumpingPose();
+      lampTransY = lampTransY + (lampTransY*(float)Math.sin(elapsedTime*6f))/100;
+
+      if (lampTransY <= 5.5f) {
+        lampTransY = 5.49f;
+        originPose();
+        jumpV = false;
+      }
+      translateLamp.setTransform(Mat4Transform.translate(lampTransX,lampTransY,lampTransZ));
     }
+    lampRoot.update();
+  }
+
+  private void jumpHorizontal() {
+    double elapsedTime = getSeconds()- buttonTime;
+
 
     lampRoot.update();
   }
@@ -913,6 +928,7 @@ public class M03_GLEventListener implements GLEventListener {
 
   private double startTime;
   private double buttonTime;
+  private double jumpTime;
 
   private double getSeconds() {
     return System.currentTimeMillis()/1000.0;
