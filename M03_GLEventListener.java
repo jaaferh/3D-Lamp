@@ -117,37 +117,17 @@ public class M03_GLEventListener implements GLEventListener {
      int rngAngleX = rng((int)rotateFootAngleNew-45, (int)rotateFootAngleNew+45);
      int rngAngleZ = (rngAngleX - 90)*-1;
 
-     // if (rngAngleX > 180) {
-     //   int a = rngAngleX - 180;
-     //   int b = 180 - a;
-     //   rngAngleX = -1 * b;
-     // }
-     // else if (rngAngleX < -180) {
-     //   int a = rngAngleX * -1;
-     //   int b = a - 180;
-     //   rngAngleX = 180 - b;
-     // }
-     //
-     // if (rngAngleZ > 180) {
-     //   int c = rngAngleZ - 180;
-     //   int d = 180 - c;
-     //   rngAngleZ = -1 * d;
-     // }
-     // else if (rngAngleZ < -180) {
-     //   int c = rngAngleZ * -1;
-     //   int d = c - 180;
-     //   rngAngleZ = 180 - d;
-     // }
-
-
      double rngAngleXRad = Math.toRadians(rngAngleX);
      double rngAngleZRad = Math.toRadians(rngAngleZ);
      double angleCosX = Math.cos(rngAngleXRad);
      double angleCosZ = Math.cos(rngAngleZRad);
 
      double length = 1.0;
-     double lampTransXNew = ((angleCosX/length)*(Math.pow(length,2)));
-     double lampTransZNew = ((angleCosZ/length)*(Math.pow(length,2)));
+     lampTransXNew = (float)((angleCosX/length)*(Math.pow(length,2)));
+     lampTransZNew = (float)((angleCosZ/length)*(Math.pow(length,2)));
+
+     lampTransXNew += lampTransX;
+     lampTransZNew = lampTransZ + (lampTransZNew*-1);
 
      rotateFootAngleNew = (float)rngAngleX;
      rotateAllAngleNew = 50;
@@ -156,28 +136,28 @@ public class M03_GLEventListener implements GLEventListener {
      rotateHeadAngleNew = 70;
      lampTransY = 5.5f;
 
-
-
-     if (lampTransX <= 7 && lampTransX >= -8 && lampTransZ >= -18 && lampTransZ <= -6) {
-       lampTransX += (float)lampTransXNew;
-       lampTransZ += (float)(lampTransZNew*-1);
-     }
-     else if (lampTransX > 7) {
-       lampTransX += -1;
-       jump();
-     }
-     else if (lampTransX < -8 ) {
-       lampTransX += 1;
-       jump();
-     }
-     else if (lampTransZ > -6) {
-       lampTransZ += -1;
-       jump();
-     }
-     else if (lampTransZ < -18) {
-       lampTransZ += 1;
-       jump();
-     }
+     //
+     //
+     // if (lampTransX <= 7 && lampTransX >= -8 && lampTransZ >= -18 && lampTransZ <= -6) {
+     //   lampTransX += (float)lampTransXNew;
+     //   lampTransZ += (float)(lampTransZNew*-1);
+     // }
+     // else if (lampTransX > 7) {
+     //   lampTransX += -1;
+     //   jump();
+     // }
+     // else if (lampTransX < -8 ) {
+     //   lampTransX += 1;
+     //   jump();
+     // }
+     // else if (lampTransZ > -6) {
+     //   lampTransZ += -1;
+     //   jump();
+     // }
+     // else if (lampTransZ < -18) {
+     //   lampTransZ += 1;
+     //   jump();
+     // }
 
      move = true;
      pose = false;
@@ -842,18 +822,18 @@ public class M03_GLEventListener implements GLEventListener {
     rotateSphereBodyAngle = poseCalculation(rotateSphereBodyAngle, rotateSphereBodyAngleNew, elapsedTime);
     rotateUpperBranchAngle = poseCalculation(rotateUpperBranchAngle, rotateUpperBranchAngleNew, elapsedTime);
     rotateHeadAngle = poseCalculation(rotateHeadAngle, rotateHeadAngleNew, elapsedTime);
-    rotateAll.setTransform(Mat4Transform.rotateAroundZ(rotateAllAngle));
-    rotateSphereBody.setTransform(Mat4Transform.rotateAroundZ(rotateSphereBodyAngle));
-    rotateUpperBranch.setTransform(Mat4Transform.rotateAroundZ(rotateUpperBranchAngle));
-    rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
-    rotateFoot.setTransform(Mat4Transform.rotateAroundY(rotateFootAngle));
-
-    if (rotateFootAngle >= rotateFootAngleNew-3 && rotateFootAngle <= rotateFootAngleNew+3) {
-      move = false;
-      jumpV = true;
-      jumpTime = getSeconds();
-    }
-
+    // rotateAll.setTransform(Mat4Transform.rotateAroundZ(rotateAllAngle));
+    // rotateSphereBody.setTransform(Mat4Transform.rotateAroundZ(rotateSphereBodyAngle));
+    // rotateUpperBranch.setTransform(Mat4Transform.rotateAroundZ(rotateUpperBranchAngle));
+    // rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
+    // rotateFoot.setTransform(Mat4Transform.rotateAroundY(rotateFootAngle));
+    //
+    // if (rotateFootAngle >= rotateFootAngleNew-3 && rotateFootAngle <= rotateFootAngleNew+3) {
+    //   move = false;
+    //   jumpV = true;
+    //   jumpTime = getSeconds();
+    // }
+    jumpV = true;
     lampRoot.update();
   }
 
@@ -861,8 +841,8 @@ public class M03_GLEventListener implements GLEventListener {
     double elapsedTime = getSeconds()- buttonTime;
 
     if (lampTransY >= 5.5f) {
-      System.out.println(elapsedTime);
-      System.out.println(lampTransY);
+      // System.out.println(elapsedTime);
+      // System.out.println(lampTransY);
       jumpingPose();
       lampTransY = lampTransY + (lampTransY*(float)Math.sin(elapsedTime*6f))/100;
 
@@ -879,7 +859,41 @@ public class M03_GLEventListener implements GLEventListener {
   private void jumpHorizontal() {
     double elapsedTime = getSeconds()- buttonTime;
 
+    if (lampTransX > (lampTransXNew - 0.2) && lampTransX < (lampTransXNew + 0.2)) {
+      lampTransX = lampTransXNew;
+    }
+    else if (lampTransX < lampTransXNew) {
+      lampTransX += (float)elapsedTime*0.1;
+    }
+    else if (lampTransX > lampTransXNew) {
+      lampTransX -= (float)elapsedTime*0.1;
+    }
 
+    if (lampTransZ > (lampTransZNew - 0.2) && lampTransZ < (lampTransZNew + 0.2)) {
+      lampTransZ = lampTransZNew;
+    }
+    else if (lampTransZ < lampTransZNew) {
+      lampTransZ += (float)elapsedTime*0.1;
+    }
+    else if (lampTransZ > lampTransZNew) {
+      lampTransZ -= (float)elapsedTime*0.1;
+    }
+
+    // Invisible walls
+    if (lampTransX > 7) {
+      lampTransX = 7;
+    }
+    else if (lampTransX < -8 ) {
+      lampTransX = -8;
+    }
+    else if (lampTransZ > -6) {
+      lampTransZ = -6;
+    }
+    else if (lampTransZ < -18) {
+      lampTransZ = -18;
+    }
+
+    translateLamp.setTransform(Mat4Transform.translate(lampTransX,lampTransY,lampTransZ));
     lampRoot.update();
   }
 
