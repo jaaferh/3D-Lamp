@@ -181,7 +181,7 @@ public class M03_GLEventListener implements GLEventListener {
   private Model floor, cubeWindow, danceFloor, sphere, sphereAfro, sphereLong;
   private Model cube, cubeBeige, cubeWood, cubeFloor, cubeBlackB, cubeTS, cubeDjBooth, cubeWall;
   private Light light, light2;
-  private SGNode lampRoot, tableRoot, wallRoot, boothRoot, discoRoot;
+  private SGNode lampRoot, glassesRoot, tableRoot, wallRoot, boothRoot, discoRoot;
 
 
   private TransformNode translateX, translateLamp;
@@ -259,6 +259,11 @@ public class M03_GLEventListener implements GLEventListener {
     float afroTransX = -1f * lampScale;
     float afroTransY = 2f * lampScale;
     float afroTransZ = 0f * lampScale;
+
+    float glassesTransX = 2f * lampScale;
+    float glassesTransY = 2f * lampScale;
+    float glassesTransZ = 0f * lampScale;
+    float glassesScale = 0.15f;
 
     // Floor
     float floorSize = 40f;
@@ -423,6 +428,83 @@ public class M03_GLEventListener implements GLEventListener {
     LightNode cube6Node = new LightNode("Light(6)", light2);
 
 
+
+
+
+
+
+    //GLASSES ROOT//
+    //GLASSES ROOT//
+    //GLASSES ROOT//
+    glassesRoot = new NameNode("Glasses structure");
+    TransformNode translateGlasses = new TransformNode("translate(0.5,7,0)",Mat4Transform.translate(glassesTransX,glassesTransY,glassesTransZ));
+
+    //LEFT LENS//
+    //LEFT LENS//
+    //LEFT LENS//
+    NameNode leftLens = new NameNode("leftLens");
+    m = Mat4Transform.scale(glassesScale*0.25f,glassesScale*3,glassesScale*3);
+    m = Mat4.multiply(Mat4Transform.translate(0,0f,glassesScale*1.5f), m);
+    TransformNode leftLensTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
+    ModelNode sphere0NodeG = new ModelNode("Spere(table body)", sphere);
+
+    //RIGHT LENS//
+    //RIGHT LENS//
+    //RIGHT LENS//
+    NameNode rightLens = new NameNode("rightLens");
+    m = Mat4Transform.scale(glassesScale*0.25f,glassesScale*3,glassesScale*3);
+    m = Mat4.multiply(Mat4Transform.translate(0,0f,glassesScale*-1.5f), m);
+    TransformNode rightLensTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
+    ModelNode sphere1NodeG = new ModelNode("Sphere(table body)", sphere);
+
+    //MIDDLE BRIDGE//
+    //MIDDLE BRIDGE//
+    //MIDDLE BRIDGE//
+    NameNode middleBridge = new NameNode("middleBridge");
+    m = Mat4Transform.scale(glassesScale*0.25f,glassesScale*0.5f,glassesScale*0.5f);
+    m = Mat4.multiply(Mat4Transform.translate(0,0f,0), m);
+    TransformNode middleBridgeTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
+    ModelNode cube3NodeG = new ModelNode("Cube(table body)", cubeWall);
+
+    //LEFT ARM//
+    //LEFT ARM//
+    //LEFT ARM//
+    NameNode leftArm = new NameNode("leftArm");
+    m = Mat4Transform.scale(glassesScale*3f,glassesScale*0.5f,glassesScale*0.25f);
+    m = Mat4.multiply(Mat4Transform.translate(glassesScale*-1.5f,0f,glassesScale*2.75f), m);
+    TransformNode leftArmTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
+    ModelNode cube5NodeG = new ModelNode("Cube(table body)", cubeWall);
+
+    //RIGHT ARM//
+    //RIGHT ARM//
+    //RIGHT ARM//
+    NameNode rightArm = new NameNode("rightArm");
+    m = Mat4Transform.scale(glassesScale*3f,glassesScale*0.5f,glassesScale*0.25f);
+    m = Mat4.multiply(Mat4Transform.translate(glassesScale*-1.5f,0f,glassesScale*-2.75f), m);
+    TransformNode rightArmTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
+    ModelNode cube6NodeG = new ModelNode("Cube(table body)", cubeWall);
+
+    // glassesRoot
+    glassesRoot.addChild(middleBridge);
+    // translateGlasses.addChild(middleBridge);
+      middleBridge.addChild(middleBridgeTransform);
+        middleBridgeTransform.addChild(cube3NodeG);
+      middleBridge.addChild(leftLens);
+        leftLens.addChild(leftLensTransform);
+          leftLensTransform.addChild(sphere0NodeG);
+        leftLens.addChild(leftArm);
+          leftArm.addChild(leftArmTransform);
+            leftArmTransform.addChild(cube5NodeG);
+      middleBridge.addChild(rightLens);
+        rightLens.addChild(rightLensTransform);
+          rightLensTransform.addChild(sphere1NodeG);
+        rightLens.addChild(rightArm);
+          rightArm.addChild(rightArmTransform);
+            rightArmTransform.addChild(cube6NodeG);
+
+    glassesRoot.update();
+
+
     // lampRoot
     lampRoot.addChild(translateLamp);
       translateLamp.addChild(rotateFoot);
@@ -453,6 +535,8 @@ public class M03_GLEventListener implements GLEventListener {
                                     translateAboveHead.addChild(afro);
                                       afro.addChild(afroTransform);
                                         afroTransform.addChild(cube5Node);
+                                  lampHead.addChild(translateGlasses);
+                                    translateGlasses.addChild(glassesRoot);
                                   // lampHead.addChild(translateFrontHead);
                                   //   translateFrontHead.addChild(lampLight);
                                   //     // lampLightTransform.addChild(lampLight);
@@ -461,6 +545,13 @@ public class M03_GLEventListener implements GLEventListener {
     lampRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
     // lampRoot.print(0, false);
     // System.exit(0);
+
+
+
+
+
+
+
 
 
 
