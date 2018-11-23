@@ -104,6 +104,16 @@ public class M03_GLEventListener implements GLEventListener {
      lampRoot.update();
    }
 
+   public void jumpingPose() {
+     rotateAllAngleNew = 10;
+     rotateSphereBodyAngleNew = -10;
+     rotateUpperBranchAngleNew = -10;
+     rotateHeadAngleNew = 50;
+     pose = true;
+     move = false;
+     lampRoot.update();
+   }
+
    public void buttonTime() {
      buttonTime = getSeconds();
    }
@@ -136,43 +146,12 @@ public class M03_GLEventListener implements GLEventListener {
      rotateHeadAngleNew = 70;
      lampTransY = 5.5f;
 
-     //
-     //
-     // if (lampTransX <= 7 && lampTransX >= -8 && lampTransZ >= -18 && lampTransZ <= -6) {
-     //   lampTransX += (float)lampTransXNew;
-     //   lampTransZ += (float)(lampTransZNew*-1);
-     // }
-     // else if (lampTransX > 7) {
-     //   lampTransX += -1;
-     //   jump();
-     // }
-     // else if (lampTransX < -8 ) {
-     //   lampTransX += 1;
-     //   jump();
-     // }
-     // else if (lampTransZ > -6) {
-     //   lampTransZ += -1;
-     //   jump();
-     // }
-     // else if (lampTransZ < -18) {
-     //   lampTransZ += 1;
-     //   jump();
-     // }
-
      move = true;
      pose = false;
      lampRoot.update();
    }
 
-   public void jumpingPose() {
-     rotateAllAngleNew = 10;
-     rotateSphereBodyAngleNew = -10;
-     rotateUpperBranchAngleNew = -10;
-     rotateHeadAngleNew = 70;
-     pose = true;
-     move = false;
-     lampRoot.update();
-   }
+
 
 
 
@@ -822,33 +801,31 @@ public class M03_GLEventListener implements GLEventListener {
     rotateSphereBodyAngle = poseCalculation(rotateSphereBodyAngle, rotateSphereBodyAngleNew, elapsedTime);
     rotateUpperBranchAngle = poseCalculation(rotateUpperBranchAngle, rotateUpperBranchAngleNew, elapsedTime);
     rotateHeadAngle = poseCalculation(rotateHeadAngle, rotateHeadAngleNew, elapsedTime);
-    // rotateAll.setTransform(Mat4Transform.rotateAroundZ(rotateAllAngle));
-    // rotateSphereBody.setTransform(Mat4Transform.rotateAroundZ(rotateSphereBodyAngle));
-    // rotateUpperBranch.setTransform(Mat4Transform.rotateAroundZ(rotateUpperBranchAngle));
-    // rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
-    // rotateFoot.setTransform(Mat4Transform.rotateAroundY(rotateFootAngle));
-    //
-    // if (rotateFootAngle >= rotateFootAngleNew-3 && rotateFootAngle <= rotateFootAngleNew+3) {
-    //   move = false;
-    //   jumpV = true;
-    //   jumpTime = getSeconds();
-    // }
-    jumpV = true;
+    rotateAll.setTransform(Mat4Transform.rotateAroundZ(rotateAllAngle));
+    rotateSphereBody.setTransform(Mat4Transform.rotateAroundZ(rotateSphereBodyAngle));
+    rotateUpperBranch.setTransform(Mat4Transform.rotateAroundZ(rotateUpperBranchAngle));
+    rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
+    rotateFoot.setTransform(Mat4Transform.rotateAroundY(rotateFootAngle));
+
+    if (rotateFootAngle == rotateFootAngleNew) {
+      move = false;
+      jumpV = true;
+      jumpTime = getSeconds();
+    }
     lampRoot.update();
   }
 
   private void jumpVertical() {
-    double elapsedTime = getSeconds()- buttonTime;
+    double elapsedTime = getSeconds()- jumpTime;
 
     if (lampTransY >= 5.5f) {
-      // System.out.println(elapsedTime);
-      // System.out.println(lampTransY);
       jumpingPose();
-      lampTransY = lampTransY + (lampTransY*(float)Math.sin(elapsedTime*6f))/100;
+      lampTransY = lampTransY + (lampTransY*(float)Math.sin(elapsedTime*10f))/70;
 
-      if (lampTransY <= 5.5f) {
+      if (lampTransY < 5.5f) {
         lampTransY = 5.49f;
         originPose();
+        buttonTime = getSeconds() - 0.5;
         jumpV = false;
       }
       translateLamp.setTransform(Mat4Transform.translate(lampTransX,lampTransY,lampTransZ));
@@ -857,39 +834,39 @@ public class M03_GLEventListener implements GLEventListener {
   }
 
   private void jumpHorizontal() {
-    double elapsedTime = getSeconds()- buttonTime;
-
+    double elapsedTime = getSeconds()- jumpTime;
+    double speed = 0.15;
     if (lampTransX > (lampTransXNew - 0.2) && lampTransX < (lampTransXNew + 0.2)) {
       lampTransX = lampTransXNew;
     }
     else if (lampTransX < lampTransXNew) {
-      lampTransX += (float)elapsedTime*0.1;
+      lampTransX += (float)elapsedTime*speed;
     }
     else if (lampTransX > lampTransXNew) {
-      lampTransX -= (float)elapsedTime*0.1;
+      lampTransX -= (float)elapsedTime*speed;
     }
 
     if (lampTransZ > (lampTransZNew - 0.2) && lampTransZ < (lampTransZNew + 0.2)) {
       lampTransZ = lampTransZNew;
     }
     else if (lampTransZ < lampTransZNew) {
-      lampTransZ += (float)elapsedTime*0.1;
+      lampTransZ += (float)elapsedTime*speed;
     }
     else if (lampTransZ > lampTransZNew) {
-      lampTransZ -= (float)elapsedTime*0.1;
+      lampTransZ -= (float)elapsedTime*speed;
     }
 
     // Invisible walls
     if (lampTransX > 7) {
       lampTransX = 7;
     }
-    else if (lampTransX < -8 ) {
+    if (lampTransX < -8 ) {
       lampTransX = -8;
     }
-    else if (lampTransZ > -6) {
+    if (lampTransZ > -6) {
       lampTransZ = -6;
     }
-    else if (lampTransZ < -18) {
+    if (lampTransZ < -18) {
       lampTransZ = -18;
     }
 
