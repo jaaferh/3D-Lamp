@@ -911,8 +911,8 @@ public class M03_GLEventListener implements GLEventListener {
 
     if (lampTransY >= 5.5f) {
       jumpingPose();
-      lampTransY = lampTransY + (lampTransY*(float)Math.sin(elapsedTime*10f))/70;
-
+      lampTransY = lampTransY + (lampTransY*(float)Math.sin(elapsedTime*10f))/50;
+      System.out.println(lampTransY);
       if (lampTransY < 5.5f) {
         lampTransY = 5.49f;
         originPose();

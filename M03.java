@@ -19,6 +19,8 @@ public class M03 extends JFrame implements ActionListener {
   private M03_GLEventListener glEventListener;
   private final FPSAnimator animator;
   private Camera camera;
+  private AudioInputStream audioInputStream;
+  private Clip clip;
 
 
   public static void main(String[] args) {
@@ -76,6 +78,9 @@ public class M03 extends JFrame implements ActionListener {
       b = new JButton("Disco Time!");
       b.addActionListener(this);
       p.add(b);
+      b = new JButton("Kill the Beat");
+      b.addActionListener(this);
+      p.add(b);
     this.add(p, BorderLayout.SOUTH);
 
     addWindowListener(new WindowAdapter() {
@@ -92,14 +97,14 @@ public class M03 extends JFrame implements ActionListener {
 
   public void playSound(String soundName) {
     try {
-      AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(soundName).getAbsoluteFile( ));
-      Clip clip = AudioSystem.getClip( );
+      audioInputStream = AudioSystem.getAudioInputStream(new File(soundName).getAbsoluteFile());
+      clip = AudioSystem.getClip();
       clip.open(audioInputStream);
-      clip.start( );
+      clip.start();
     }
     catch(Exception ex) {
      System.out.println("Error with playing sound.");
-     ex.printStackTrace( );
+     ex.printStackTrace();
     }
   }
 
@@ -128,7 +133,27 @@ public class M03 extends JFrame implements ActionListener {
       glEventListener.originalPosition();
     }
     else if (e.getActionCommand().equalsIgnoreCase("Disco Time!")) {
-      playSound("audio\\flying_to_space.wav");
+      switch(glEventListener.rng(1,5)) {
+        case 1 :
+          playSound("audio\\flying_to_space.wav");
+          break;
+        case 2 :
+          playSound("audio\\delegation_you_and_i.wav");
+          break;
+        case 3 :
+          playSound("audio\\makoto_lazy_night.wav");
+          break;
+        case 4 :
+          playSound("audio\\rose_royce_car_wash.wav");
+          break;
+        case 5 :
+          playSound("audio\\whispers_and_the_beat_goes_on.wav");
+          break;
+      }
+    }
+    else if (e.getActionCommand().equalsIgnoreCase("Kill the Beat")) {
+      clip.stop();
+      clip.setFramePosition(0);
     }
     else if(e.getActionCommand().equalsIgnoreCase("quit"))
       System.exit(0);
