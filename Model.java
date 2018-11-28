@@ -14,8 +14,9 @@ public class Model {
   private Camera camera;
   private Light light;
   private Light light2;
+  private Light spotLight;
 
-  public Model(GL3 gl, Camera camera, Light light, Light light2, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh, int[] textureId1, int[] textureId2) {
+  public Model(GL3 gl, Camera camera, Light light, Light light2, Light spotLight, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh, int[] textureId1, int[] textureId2) {
     this.mesh = mesh;
     this.material = material;
     this.modelMatrix = modelMatrix;
@@ -23,16 +24,17 @@ public class Model {
     this.camera = camera;
     this.light = light;
     this.light2 = light2;
+    this.spotLight = spotLight;
     this.textureId1 = textureId1;
     this.textureId2 = textureId2;
   }
 
-  public Model(GL3 gl, Camera camera, Light light, Light light2, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh, int[] textureId1) {
-    this(gl, camera, light, light2, shader, material, modelMatrix, mesh, textureId1, null);
+  public Model(GL3 gl, Camera camera, Light light, Light light2, Light spotLight, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh, int[] textureId1) {
+    this(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId1, null);
   }
 
-  public Model(GL3 gl, Camera camera, Light light, Light light2, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh) {
-    this(gl, camera, light, light2, shader, material, modelMatrix, mesh, null, null);
+  public Model(GL3 gl, Camera camera, Light light, Light light2, Light spotLight, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh) {
+    this(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, null, null);
   }
 
   public void setModelMatrix(Mat4 m) {
@@ -46,9 +48,12 @@ public class Model {
   public void setLight(Light light) {
     this.light = light;
   }
-
   public void setLight2(Light light2) {
     this.light2 = light2;
+  }
+
+  public void setspotLight(Light spotLight) {
+    this.spotLight = spotLight;
   }
 
   public void render(GL3 gl, Mat4 modelMatrix) {
@@ -60,10 +65,18 @@ public class Model {
     shader.setVec3(gl, "viewPos", camera.getPosition());
 
     shader.setVec3(gl, "light.position", light.getPosition());
-    shader.setVec3(gl, "light2.position2", light2.getPosition());
     shader.setVec3(gl, "light.ambient", light.getMaterial().getAmbient());
     shader.setVec3(gl, "light.diffuse", light.getMaterial().getDiffuse());
     shader.setVec3(gl, "light.specular", light.getMaterial().getSpecular());
+
+    shader.setVec3(gl, "light2.position", light.getPosition());
+
+    shader.setVec3(gl, "spotLight.position", spotLight.getPosition());
+    shader.setVec3(gl, "spotLight.direction", camera.getFront());
+    shader.setFloat(gl, "spotLight.cutOff", (float)(Math.cos(Math.toRadians(10f))));
+    shader.setFloat(gl, "spotLight.outerCutOff", (float)(Math.cos(Math.toRadians(11f))));
+
+
 
     shader.setVec3(gl, "material.ambient", material.getAmbient());
     shader.setVec3(gl, "material.diffuse", material.getDiffuse());

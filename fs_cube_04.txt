@@ -15,14 +15,24 @@ struct Light {
   vec3 ambient;
   vec3 diffuse;
   vec3 specular;
+
 };
 
 struct Light2 {
-  vec3 position2;
+  vec3 position;
+};
+
+struct SpotLight {
+  vec3 position;
+  vec3 direction;
+
+  float cutOff;
+  float outerCutOff;
 };
 
 uniform Light light;
 uniform Light2 light2;
+uniform SpotLight spotLight;
 
 struct Material {
   vec3 ambient;
@@ -34,6 +44,15 @@ struct Material {
 uniform Material material;
 
 void main() {
+
+  // spotlight calculation
+  vec3 lightDirSpot = normalize(spotLight.position - aPos);
+
+  float theta = dot(lightDirSpot, normalize(-spotLight.direction));
+  float epsilon = spotLight.cutOff - spotLight.outerCutOff;
+  float intensity = clamp((theta - spotLight.outerCutOff) / epsilon, 0.0, 1.0);
+
+
   // ambient
   vec3 ambient = light.ambient * vec3(texture(first_texture, aTexCoord));
 
@@ -41,7 +60,6 @@ void main() {
   vec3 norm = normalize(aNormal);
   vec3 lightDir = normalize(light.position - aPos);
   float diff = max(dot(norm, lightDir), 0.0);
-
   vec3 diffuse = light.diffuse * diff * vec3(texture(first_texture, aTexCoord));
 
   // specular
@@ -50,28 +68,42 @@ void main() {
   float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
   vec3 specular = light.specular * spec * vec3(texture(second_texture, aTexCoord));
 
-
-
-  // diffuse 2
-  vec3 lightDir2 = normalize(light2.position2 - aPos);
+  // diffuse2
+  vec3 lightDir2 = normalize(light2.position - aPos);
   float diff2 = max(dot(norm, lightDir2), 0.0);
-
   vec3 diffuse2 = light.diffuse * diff2 * vec3(texture(first_texture, aTexCoord));
 
-  // specular
+  // specular2
   vec3 reflectDir2 = reflect(-lightDir2, norm);
   float spec2 = pow(max(dot(viewDir, reflectDir2), 0.0), material.shininess);
   vec3 specular2 = light.specular * spec2 * vec3(texture(second_texture, aTexCoord));
+
+
+  // diffuse spotlight
+  float diffSpot = max(dot(norm, lightDirSpot), 0.0);
+  vec3 diffuseSpot = light.diffuse * diffSpot * vec3(texture(first_texture, aTexCoord));
+  diffuseSpot = diffuseSpot * intensity;
+
+  // specular spotlight
+  vec3 reflectDirSpot = reflect(-lightDirSpot, norm);
+  float specSpot = pow(max(dot(viewDir, reflectDirSpot), 0.0), material.shininess);
+  vec3 specularSpot = light.specular * specSpot * vec3(texture(second_texture, aTexCoord));
+  specularSpot = specularSpot * intensity;
 
   // result
   vec3 result = ambient + diffuse + specular;
   result = result * 0.5;
 
-  // result 2
+  // result2
   vec3 result2 = ambient + diffuse2 + specular2;
   result2 = result2 * 0.5;
 
-  result = result + result2;
+  // result spotlight
+  vec3 resultSpot = diffuseSpot + specularSpot;
+  resultSpot = resultSpot * 2;
+
+
+  result = result + result2 + resultSpot;
 
   fragColor = vec4(result, 1.0);
 }

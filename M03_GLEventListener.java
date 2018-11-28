@@ -67,23 +67,6 @@ public class M03_GLEventListener implements GLEventListener {
    *
    */
 
-   // public void incXPosition() {
-   //   xPosition += 0.5f;
-   //   if (xPosition>5f) xPosition = 5f;
-   //   updateX();
-   // }
-   //
-   // public void decXPosition() {
-   //   xPosition -= 0.5f;
-   //   if (xPosition<-5f) xPosition = -5f;
-   //   updateX();
-   // }
-   //
-   // private void updateX() {
-   //   translateX.setTransform(Mat4Transform.translate(xPosition,0,0));
-   //   translateX.update(); // IMPORTANT – the scene graph has changed
-   // }
-
    public void randomPose() {
      rotateAllAngleNew = rng(-30,55);
      rotateSphereBodyAngleNew = rng(-30,20);
@@ -180,7 +163,7 @@ public class M03_GLEventListener implements GLEventListener {
   private Mat4 perspective;
   private Model floor, cubeWindow, danceFloor, sphere, sphereAfro, sphereLong;
   private Model cube, cubeBeige, cubeWood, cubeFloor, cubeBlackB, cubeTS, cubeDjBooth, cubeWall;
-  private Light light, light2;
+  private Light light, light2, spotLight;
   private SGNode lampRoot, glassesRoot, tableRoot, wallRoot, boothRoot, discoRoot;
 
 
@@ -287,16 +270,18 @@ public class M03_GLEventListener implements GLEventListener {
     light = new Light(gl);
     light.setCamera(camera);
 
-
     light2 = new Light(gl);
     light2.setCamera(camera);
+
+    spotLight = new Light(gl);
+    spotLight.setCamera(camera);
 
 
     Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
     Shader shader = new Shader(gl, "vs_tt_05.txt", "fs_tt_uncoloured.txt");
     Material material = new Material(new Vec3(0.0f, 0.5f, 0.81f), new Vec3(0.0f, 0.5f, 0.81f), new Vec3(0.3f, 0.3f, 0.3f), 32.0f);
     Mat4 modelMatrix = Mat4Transform.scale(floorSize,1f,floorSize);
-    floor = new Model(gl, camera, light, light2, shader, material, modelMatrix, mesh, textureId0);
+    floor = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId0);
 
 
 
@@ -304,35 +289,35 @@ public class M03_GLEventListener implements GLEventListener {
     shader = new Shader(gl, "vs_cube_04.txt", "fs_cube_04.txt");
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
-    sphere = new Model(gl, camera, light, light2, shader, material, modelMatrix, mesh, textureId3, textureId3);
-    sphereLong = new Model(gl, camera, light, light2, shader, material, modelMatrix, mesh, textureId2, textureId4);
+    sphere = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId3, textureId3);
+    sphereLong = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId2, textureId4);
 
     material = new Material(new Vec3(0.1f, 0.1f, 0.1f), new Vec3(0.1f, 0.1f, 0.1f), new Vec3(0.1f, 0.1f, 0.1f), 100.0f);
-    sphereAfro = new Model(gl, camera, light, light2, shader, material, modelMatrix, mesh, textureId6);
+    sphereAfro = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId6);
 
 
     mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
     shader = new Shader(gl, "vs_cube_04.txt", "fs_cube_04.txt");
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
-    cube = new Model(gl, camera, light, light2, shader, material, modelMatrix, mesh, textureId1);
-    cubeBeige = new Model(gl, camera, light, light2, shader, material, modelMatrix, mesh, textureId5);
-    cubeWood = new Model(gl, camera, light, light2, shader, material, modelMatrix, mesh, textureId7);
-    cubeFloor = new Model(gl, camera, light, light2, shader, material, modelMatrix, mesh, textureId0);
-    cubeBlackB = new Model(gl, camera, light, light2, shader, material, modelMatrix, mesh, textureId10);
-    cubeWall = new Model(gl, camera, light, light2, shader, material, modelMatrix, mesh, textureId13);
-    cubeWindow = new Model(gl, camera, light, light2, shader, material, modelMatrix, mesh, textureId8);
+    cube = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId1);
+    cubeBeige = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId5);
+    cubeWood = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId7);
+    cubeFloor = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId0);
+    cubeBlackB = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId10);
+    cubeWall = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId13);
+    cubeWindow = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId8);
 
     mesh = new Mesh(gl, CubeSpeaker.vertices.clone(), CubeSpeaker.indices.clone());
-    cubeTS = new Model(gl, camera, light, light2, shader, material, modelMatrix, mesh, textureId11);
+    cubeTS = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId11);
 
     mesh = new Mesh(gl, CubeBooth.vertices.clone(), CubeBooth.indices.clone());
-    cubeDjBooth = new Model(gl, camera, light, light2, shader, material, modelMatrix, mesh, textureId12);
+    cubeDjBooth = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId12);
 
     mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
     Mat4 m = Mat4Transform.scale(danceFloorScale*30f,danceFloorScale*0.5f,danceFloorScale*30f);
     modelMatrix = Mat4.multiply(Mat4Transform.translate(0,5.5f,-12.5f), m);
-    danceFloor = new Model(gl, camera, light, light2, shader, material, modelMatrix, mesh, textureId9);
+    danceFloor = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId9);
 
 
 
@@ -847,9 +832,11 @@ public class M03_GLEventListener implements GLEventListener {
 
     // light.setPosition(getLightPosition());  // changing light position each frame
     light.setPosition(new Vec3(15f,15f,15f));
+    light.render(gl);
     light2.setPosition(new Vec3(-15f,15f,15f));
     light2.render(gl);
-    light.render(gl);
+    spotLight.setPosition(new Vec3(-7f,7f,-12.5f));
+    spotLight.render(gl);
     floor.render(gl);
     lampRoot.draw(gl);
     tableRoot.draw(gl);
