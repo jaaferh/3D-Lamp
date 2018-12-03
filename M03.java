@@ -63,6 +63,18 @@ public class M03 extends JFrame implements ActionListener {
       b = new JButton("Camera Z");
       b.addActionListener(this);
       p.add(b);
+      b = new JButton("Left Light Off");
+      b.addActionListener(this);
+      p.add(b);
+      b = new JButton("Left Light On");
+      b.addActionListener(this);
+      p.add(b);
+      b = new JButton("Right Light Off");
+      b.addActionListener(this);
+      p.add(b);
+      b = new JButton("Right Light On");
+      b.addActionListener(this);
+      p.add(b);
       b = new JButton("Random Pose");
       b.addActionListener(this);
       p.add(b);
@@ -116,6 +128,18 @@ public class M03 extends JFrame implements ActionListener {
     else if (e.getActionCommand().equalsIgnoreCase("Camera Z")) {
       camera.setCamera(Camera.CameraType.Z);
       canvas.requestFocusInWindow();
+    }
+    else if (e.getActionCommand().equalsIgnoreCase("Left Light Off")) {
+      glEventListener.light1Off();
+    }
+    else if (e.getActionCommand().equalsIgnoreCase("Left Light On")) {
+      glEventListener.light1On();
+    }
+    else if (e.getActionCommand().equalsIgnoreCase("Right Light Off")) {
+      glEventListener.light2Off();
+    }
+    else if (e.getActionCommand().equalsIgnoreCase("Right Light On")) {
+      glEventListener.light2On();
     }
     else if (e.getActionCommand().equalsIgnoreCase("Random Pose")) {
       glEventListener.buttonTime();

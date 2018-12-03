@@ -71,6 +71,10 @@ public class Light {
     this.camera = camera;
   }
 
+  public Camera getCamera() {
+    return camera;
+  }
+
   public void render(GL3 gl, Mat4 modelMatrix) {
     // Mat4 model = new Mat4(1);
     // modelMatrix = Mat4.multiply(Mat4Transform.scale(0.3f,0.3f,0.3f), modelMatrix);

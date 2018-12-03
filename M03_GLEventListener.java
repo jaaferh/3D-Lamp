@@ -44,6 +44,7 @@ public class M03_GLEventListener implements GLEventListener {
     float aspect = (float)width/(float)height;
     camera.setPerspectiveMatrix(Mat4Transform.perspective(45, aspect));
     // camera.setTarget(new Vec3(0f,6f,-10f));
+    spotCamera.setPerspectiveMatrix(Mat4Transform.perspective(45, aspect));
   }
 
   /* Draw */
@@ -66,6 +67,40 @@ public class M03_GLEventListener implements GLEventListener {
    *
    *
    */
+
+   public void light1Off() {
+     Material m = new Material();
+     m.setAmbient(0.0f, 0.0f, 0.0f);
+     m.setDiffuse(0.0f, 0.0f, 0.0f);
+     m.setSpecular(0.0f, 0.0f, 0.0f);
+     light.setMaterial(m);
+   }
+
+   public void light1On() {
+     Material m = new Material();
+     m.setAmbient(0.5f, 0.5f, 0.5f);
+     m.setDiffuse(0.8f, 0.8f, 0.8f);
+     m.setSpecular(0.8f, 0.8f, 0.8f);
+     light.setMaterial(m);
+   }
+
+   public void light2Off() {
+     Material m = new Material();
+     m.setAmbient(0.0f, 0.0f, 0.0f);
+     m.setDiffuse(0.0f, 0.0f, 0.0f);
+     m.setSpecular(0.0f, 0.0f, 0.0f);
+     light2.setMaterial(m);
+   }
+
+   public void light2On() {
+     Material m = new Material();
+     m.setAmbient(0.5f, 0.5f, 0.5f);
+     m.setDiffuse(0.8f, 0.8f, 0.8f);
+     m.setSpecular(0.8f, 0.8f, 0.8f);
+     light2.setMaterial(m);
+   }
+
+
 
    public void randomPose() {
      rotateAllAngleNew = rng(-30,55);
@@ -155,7 +190,7 @@ public class M03_GLEventListener implements GLEventListener {
   private Boolean move = false;
   private Boolean jumpV = false;
 
-  private Camera camera;
+  private Camera camera, spotCamera;
   private Mat4 perspective;
   private Model floor, cubeWindow, danceFloor, sphere, sphereAfro, sphereLong;
   private Model cube, cubeBeige, cubeWood, cubeFloor, cubeBlackB, cubeTS, cubeDjBooth, cubeWall;
@@ -263,14 +298,19 @@ public class M03_GLEventListener implements GLEventListener {
     float danceFloorScale = 0.3f;
 
 
+
     light = new Light(gl);
     light.setCamera(camera);
 
     light2 = new Light(gl);
     light2.setCamera(camera);
 
+    spotCamera = new Camera(Camera.DEFAULT_POSITION, Camera.DEFAULT_TARGET, Camera.DEFAULT_UP);
+    spotCamera.setPosition(new Vec3(lampTransX+1f,lampTransY+4f,lampTransZ));
+    spotCamera.setTarget(new Vec3(lampTransX+4f,lampTransY, -12.5f));
+
     spotLight = new Light(gl);
-    spotLight.setCamera(camera);
+    spotLight.setCamera(spotCamera);
 
 
     Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
@@ -408,9 +448,11 @@ public class M03_GLEventListener implements GLEventListener {
     TransformNode lampLightTransform = new TransformNode("scale(5,5,5);translate(0,0.5,0)", m);
     LightNode cube6Node = new LightNode("Light(6)", spotLight);
 
-
-
-
+    // CAMERA //
+    // CAMERA //
+    // CAMERA //
+    NameNode lampCamera = new NameNode("lamp camera");
+    CameraNode cube7Node = new CameraNode("Light(6)", spotCamera);
 
 
     //GLASSES ROOT//
@@ -466,7 +508,6 @@ public class M03_GLEventListener implements GLEventListener {
 
     // glassesRoot
     glassesRoot.addChild(middleBridge);
-    // translateGlasses.addChild(middleBridge);
       middleBridge.addChild(middleBridgeTransform);
         middleBridgeTransform.addChild(cube3NodeG);
       middleBridge.addChild(leftLens);
@@ -521,7 +562,8 @@ public class M03_GLEventListener implements GLEventListener {
                                     translateFrontHead.addChild(lampLightTransform);
                                       lampLightTransform.addChild(lampLight);
                                         lampLight.addChild(cube6Node);
-
+                                    translateFrontHead.addChild(lampCamera);
+                                      lampCamera.addChild(cube7Node);
     lampRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
     // lampRoot.print(0, false);
     // System.exit(0);
