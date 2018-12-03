@@ -407,8 +407,6 @@ public class M03_GLEventListener implements GLEventListener {
     m = Mat4.multiply(m, Mat4Transform.translate(0,0,0));
     TransformNode lampLightTransform = new TransformNode("scale(5,5,5);translate(0,0.5,0)", m);
     LightNode cube6Node = new LightNode("Light(6)", spotLight);
-    // -13,17,-28.5f
-
 
 
 

@@ -72,7 +72,7 @@ public class Model {
     shader.setVec3(gl, "light2.position", light.getPosition());
 
     shader.setVec3(gl, "spotLight.position", spotLight.getSpotPosition());
-    shader.setVec3(gl, "spotLight.direction", camera.getFront());
+    shader.setVec3(gl, "spotLight.direction", new Vec3(1,-1,0));
     shader.setFloat(gl, "spotLight.cutOff", (float)(Math.cos(Math.toRadians(10f))));
     shader.setFloat(gl, "spotLight.outerCutOff", (float)(Math.cos(Math.toRadians(11f))));
 
