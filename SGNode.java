@@ -17,11 +17,11 @@ public class SGNode {
   public void addChild(SGNode child) {
     children.add(child);
   }
-  
+
   public void update() {
     update(worldTransform);
   }
-  
+
   protected void update(Mat4 t) {
     worldTransform = t;
     for (int i=0; i<children.size(); i++) {
@@ -36,7 +36,7 @@ public class SGNode {
     }
     return s;
   }
-  
+
   public void print(int indent, boolean inFull) {
     System.out.println(getIndentString(indent)+"Name: "+name);
     if (inFull) {
@@ -47,7 +47,7 @@ public class SGNode {
       children.get(i).print(indent+1, inFull);
     }
   }
-  
+
   public void draw(GL3 gl) {
     for (int i=0; i<children.size(); i++) {
       children.get(i).draw(gl);

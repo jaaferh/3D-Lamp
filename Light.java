@@ -10,15 +10,19 @@ public class Light {
   private Mat4 model;
   private Shader shader;
   private Camera camera;
+  private Mat4 modelMatrix;
+  private Vec3 spotPosition;
 
   public Light(GL3 gl) {
     material = new Material();
     material.setAmbient(0.5f, 0.5f, 0.5f);
     material.setDiffuse(0.8f, 0.8f, 0.8f);
     material.setSpecular(0.8f, 0.8f, 0.8f);
-    position = new Vec3(3f,2f,1f);
+    position = new Vec3(0f,0f,0f);
+    spotPosition = new Vec3(0f,0f,0f);
     model = new Mat4(1);
     shader = new Shader(gl, "vs_light_01.txt", "fs_light_01.txt");
+    modelMatrix = new Mat4(1);
     fillBuffers(gl);
   }
 
@@ -38,6 +42,23 @@ public class Light {
     return position;
   }
 
+  public void setSpotPosition(Vec3 v) {
+    spotPosition.x = v.x;
+    spotPosition.y = v.y;
+    spotPosition.z = v.z;
+  }
+
+  public void setSpotPosition(float x, float y, float z) {
+    spotPosition.x = x;
+    spotPosition.y = y;
+    spotPosition.z = z;
+  }
+
+  public Vec3 getSpotPosition() {
+    return spotPosition;
+  }
+
+
   public void setMaterial(Material m) {
     material = m;
   }
@@ -50,12 +71,12 @@ public class Light {
     this.camera = camera;
   }
 
-  public void render(GL3 gl) {
-    Mat4 model = new Mat4(1);
-    model = Mat4.multiply(Mat4Transform.scale(0.3f,0.3f,0.3f), model);
-    model = Mat4.multiply(Mat4Transform.translate(position), model);
+  public void render(GL3 gl, Mat4 modelMatrix) {
+    // Mat4 model = new Mat4(1);
+    // modelMatrix = Mat4.multiply(Mat4Transform.scale(0.3f,0.3f,0.3f), modelMatrix);
+    modelMatrix = Mat4.multiply(Mat4Transform.translate(position), modelMatrix);
 
-    Mat4 mvpMatrix = Mat4.multiply(camera.getPerspectiveMatrix(), Mat4.multiply(camera.getViewMatrix(), model));
+    Mat4 mvpMatrix = Mat4.multiply(camera.getPerspectiveMatrix(), Mat4.multiply(camera.getViewMatrix(), modelMatrix));
 
     shader.use(gl);
     shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
@@ -63,6 +84,9 @@ public class Light {
     gl.glBindVertexArray(vertexArrayId[0]);
     gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
     gl.glBindVertexArray(0);
+  }
+  public void render(GL3 gl) {
+    render(gl, modelMatrix);
   }
 
   public void dispose(GL3 gl) {

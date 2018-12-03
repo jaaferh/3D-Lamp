@@ -134,10 +134,6 @@ public class M03_GLEventListener implements GLEventListener {
      lampRoot.update();
    }
 
-
-
-
-
    public void originalPosition() {
      lampTransX = 0.5f;
      lampTransY = 5.5f;
@@ -401,19 +397,17 @@ public class M03_GLEventListener implements GLEventListener {
     // LIGHT //
     // LIGHT //
     // LIGHT //
-    // light2 = new Light(gl);
-    // light2.setCamera(camera);
-    // float lightTransX =(lampScale*3f)+(0.5f);
-    // float lightTransY =(lampScale*16.6f)-1+(5.5f);
-    // float lightTransZ =(lampScale*0f)+(-12.5f);
-    // TransformNode translateFrontHead = new TransformNode("translate(0.5,7,0)",Mat4Transform.translate(lightTransX,lightTransY,0f));
-    //
-    // NameNode lampLight = new NameNode("lamp light");
-    // // m = Mat4Transform.scale(10,10,10);
-    // // m = Mat4.multiply(m, Mat4Transform.translate(1,10f,0));
-    // // TransformNode lampLightTransform = new TransformNode("scale(5,5,5);translate(0,0.5,0)", m);
-    // light2.setPosition(lightTransX, lightTransY, lightTransZ);
-    // LightNode cube6Node = new LightNode("Light(6)", light2);
+    float lightTransX =(lampScale*3f)+(0.5f);
+    float lightTransY =(lampScale*16.6f)-1+(5.5f);
+    float lightTransZ =(lampScale*0f)+(-12.5f);
+    TransformNode translateFrontHead = new TransformNode("translate(0.5,7,0)",Mat4Transform.translate(0.5f,0.2f,0));
+
+    NameNode lampLight = new NameNode("lamp light");
+    m = Mat4Transform.scale(0.3f,0.3f,0.5f);
+    m = Mat4.multiply(m, Mat4Transform.translate(0,0,0));
+    TransformNode lampLightTransform = new TransformNode("scale(5,5,5);translate(0,0.5,0)", m);
+    LightNode cube6Node = new LightNode("Light(6)", spotLight);
+    // -13,17,-28.5f
 
 
 
@@ -525,10 +519,10 @@ public class M03_GLEventListener implements GLEventListener {
                                         afroTransform.addChild(cube5Node);
                                   lampHead.addChild(translateGlasses);
                                     translateGlasses.addChild(glassesRoot);
-                                  // lampHead.addChild(translateFrontHead);
-                                  //   translateFrontHead.addChild(lampLight);
-                                  //     // lampLightTransform.addChild(lampLight);
-                                  //       lampLight.addChild(cube6Node);
+                                  lampHead.addChild(translateFrontHead);
+                                    translateFrontHead.addChild(lampLightTransform);
+                                      lampLightTransform.addChild(lampLight);
+                                        lampLight.addChild(cube6Node);
 
     lampRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
     // lampRoot.print(0, false);
@@ -835,8 +829,7 @@ public class M03_GLEventListener implements GLEventListener {
     light.render(gl);
     light2.setPosition(new Vec3(-15f,15f,15f));
     light2.render(gl);
-    spotLight.setPosition(new Vec3(-7f,7f,-12.5f));
-    spotLight.render(gl);
+    spotLight.setSpotPosition(new Vec3(lampTransX+1f,lampTransY+4f, lampTransZ)); // spotlight source pos not model pos
     floor.render(gl);
     lampRoot.draw(gl);
     tableRoot.draw(gl);
