@@ -43,8 +43,7 @@ public class M03_GLEventListener implements GLEventListener {
     gl.glViewport(x, y, width, height);
     float aspect = (float)width/(float)height;
     camera.setPerspectiveMatrix(Mat4Transform.perspective(45, aspect));
-    // camera.setTarget(new Vec3(0f,6f,-10f));
-    spotCamera.setPerspectiveMatrix(Mat4Transform.perspective(1, aspect));
+    spotCamera.setPerspectiveMatrix(Mat4Transform.perspective(1, 1));
   }
 
   /* Draw */
@@ -164,6 +163,11 @@ public class M03_GLEventListener implements GLEventListener {
      lampRoot.update();
    }
 
+   public void turn180() {
+     rotateFootAngleNew = rotateFootAngle - 180;
+     lampRoot.update();
+   }
+
 
   // ***************************************************
   /* THE SCENE
@@ -177,7 +181,7 @@ public class M03_GLEventListener implements GLEventListener {
   private Camera camera, spotCamera;
   private Mat4 perspective;
   private Model floor, cubeWindow, danceFloor, sphere, sphereAfro, sphereLong;
-  private Model cube, cubeBeige, cubeWood, cubeFloor, cubeBlackB, cubeTS, cubeDjBooth, cubeWall;
+  private Model cube, cubeBeige, cubeWood, cubeWoodLegs, cubeFloor, cubeBlackB, cubeTS, cubeDjBooth, cubeWall;
   private Light light, light2, spotLight;
   private SGNode lampRoot, glassesRoot, tableRoot, wallRoot, boothRoot, discoRoot;
 
@@ -211,11 +215,11 @@ public class M03_GLEventListener implements GLEventListener {
     createRandomNumbers();
     int[] textureId0 = TextureLibrary.loadTexture(gl, "textures/carpet.jpg");
     int[] textureId1 = TextureLibrary.loadTexture(gl, "textures/leather.jpg");
-    int[] textureId2 = TextureLibrary.loadTexture(gl, "textures/red_disco.jpg");
+    int[] textureId2 = TextureLibrary.loadTexture(gl, "textures/red.jpg");
     int[] textureId3 = TextureLibrary.loadTexture(gl, "textures/disco.jpg");
-    int[] textureId4 = TextureLibrary.loadTexture(gl, "textures/jade_specular.jpg");
+    int[] textureId4 = TextureLibrary.loadTexture(gl, "textures/glitterred.jpg");
     int[] textureId5 = TextureLibrary.loadTexture(gl, "textures/beige.jpg");
-    int[] textureId6 = TextureLibrary.loadTexture(gl, "textures/afro.jpg");
+    int[] textureId6 = TextureLibrary.loadTexture(gl, "textures/grayafro.jpg");
     int[] textureId7 = TextureLibrary.loadTexture(gl, "textures/wood.jpg");
     int[] textureId8 = TextureLibrary.loadTexture(gl, "textures/moon.jpg");
     int[] textureId9 = TextureLibrary.loadTexture(gl, "textures/dancefloor.jpg");
@@ -290,10 +294,6 @@ public class M03_GLEventListener implements GLEventListener {
     light2.setCamera(camera);
 
     spotCamera = new Camera(Camera.DEFAULT_POSITION, Camera.DEFAULT_TARGET, Camera.DEFAULT_UP);
-
-    spotCamera.setPosition(new Vec3(lampTransX+1f,lampTransY+4f,lampTransZ));
-    // spotCamera.setTarget(new Vec3(lampTransX+2f,lampTransY,-12.5f));
-
     spotLight = new Light(gl);
     spotLight.setCamera(spotCamera);
 
@@ -312,7 +312,7 @@ public class M03_GLEventListener implements GLEventListener {
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
     sphere = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId3, textureId3);
-    sphereLong = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId2, textureId4);
+    sphereLong = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId2, textureId3);
 
     material = new Material(new Vec3(0.1f, 0.1f, 0.1f), new Vec3(0.1f, 0.1f, 0.1f), new Vec3(0.1f, 0.1f, 0.1f), 100.0f);
     sphereAfro = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId6);
@@ -322,13 +322,16 @@ public class M03_GLEventListener implements GLEventListener {
     shader = new Shader(gl, "vs_cube_04.txt", "fs_cube_04.txt");
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
+    cubeWood = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId7);
     cube = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId1);
     cubeBeige = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId5);
-    cubeWood = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId7);
     cubeFloor = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId0);
     cubeBlackB = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId10);
     cubeWall = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId13);
     cubeWindow = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId8);
+
+    mesh = new Mesh(gl, CubeTableLeg.vertices.clone(), CubeTableLeg.indices.clone());
+    cubeWoodLegs = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId7);
 
     mesh = new Mesh(gl, CubeSpeaker.vertices.clone(), CubeSpeaker.indices.clone());
     cubeTS = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId11);
@@ -590,7 +593,7 @@ public class M03_GLEventListener implements GLEventListener {
     // TABLE LEG BACK LEFT //
     NameNode tableLegBL = new NameNode("tableLegBL");
     m = Mat4Transform.scale(1f,5f,1f);
-    m = Mat4.multiply(Mat4Transform.translate((0.5f*-tableLength)+0.5f,2.5f,(0.5f*-tableDepth)+0.5f), m);
+    m = Mat4.multiply(Mat4Transform.translate((0.5f*-tableLength)+0.5f,2.0f,(0.5f*-tableDepth)+0.5f), m);
     TransformNode tableLegBLTransform = new TransformNode("translate(-6.5,2.5,-9.5);scale(1,5,1)", m);
     ModelNode cube1NodeT = new ModelNode("Cube(table leg back left)", cubeWood);
 
@@ -599,7 +602,7 @@ public class M03_GLEventListener implements GLEventListener {
     // TABLE LEG BACK RIGHT //
     NameNode tableLegBR = new NameNode("tableLegBR");
     m = Mat4Transform.scale(1f,5f,1f);
-    m = Mat4.multiply(Mat4Transform.translate((0.5f*tableLength)-0.5f,2.5f,(0.5f*-tableDepth)+0.5f), m);
+    m = Mat4.multiply(Mat4Transform.translate((0.5f*tableLength)-0.5f,2.0f,(0.5f*-tableDepth)+0.5f), m);
     TransformNode tableLegBRTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
     ModelNode cube2NodeT = new ModelNode("Cube(table leg back right)", cubeWood);
 
@@ -608,7 +611,7 @@ public class M03_GLEventListener implements GLEventListener {
     // TABLE LEG FRONT RIGHT //
     NameNode tableLegFR = new NameNode("tableLegFR");
     m = Mat4Transform.scale(1f,5f,1f);
-    m = Mat4.multiply(Mat4Transform.translate((0.5f*tableLength)-0.5f,2.5f,(0.5f*tableDepth)-0.5f), m);
+    m = Mat4.multiply(Mat4Transform.translate((0.5f*tableLength)-0.5f,2.0f,(0.5f*tableDepth)-0.5f), m);
     TransformNode tableLegFRTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
     ModelNode cube3NodeT = new ModelNode("Cube(table leg front right)", cubeWood);
 
@@ -617,7 +620,7 @@ public class M03_GLEventListener implements GLEventListener {
     // TABLE LEG FRONT LEFT //
     NameNode tableLegFL = new NameNode("tableLegFL");
     m = Mat4Transform.scale(1f,5f,1f);
-    m = Mat4.multiply(Mat4Transform.translate((0.5f*-tableLength)+0.5f,2.5f,(0.5f*tableDepth)-0.5f), m);
+    m = Mat4.multiply(Mat4Transform.translate((0.5f*-tableLength)+0.5f,2.0f,(0.5f*tableDepth)-0.5f), m);
     TransformNode tableLegFLTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
     ModelNode cube4NodeT = new ModelNode("Cube(table leg front left)", cubeWood);
 
@@ -895,21 +898,14 @@ public class M03_GLEventListener implements GLEventListener {
 
   private void updateBranches() {
     double elapsedTime = getSeconds()-startTime;
-    // rotateHeadAngle = rotateHeadAngleStart*(float)Math.sin(elapsedTime*13.17);
-    // rotateUpperBranchAngle = rotateUpperAngleStart*(float)Math.sin(elapsedTime*0.7f);
-    // rotateUpperBranch.setTransform(Mat4Transform.rotateAroundZ(rotateUpperBranchAngle));
-    // rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
     rotateDiscoAngle = rotateDiscoAngleStart + (float)elapsedTime*50;
     rotateDisco.setTransform(Mat4Transform.rotateAroundY(rotateDiscoAngle));
-    // lampRoot.update(); // IMPORTANT – the scene graph has changed
     discoRoot.update();
   }
 
   private void updateFootAngle() {
     double elapsedTime = getSeconds()-buttonTime;
     rotateFootAngle = poseCalculation(rotateFootAngle, rotateFootAngleNew, elapsedTime);
-    // System.out.println(rotateFootAngle);
-    // System.out.println(rotateFootAngleNew);
     rotateAllAngle = poseCalculation(rotateAllAngle, rotateAllAngleNew, elapsedTime);
     rotateSphereBodyAngle = poseCalculation(rotateSphereBodyAngle, rotateSphereBodyAngleNew, elapsedTime);
     rotateUpperBranchAngle = poseCalculation(rotateUpperBranchAngle, rotateUpperBranchAngleNew, elapsedTime);
@@ -972,15 +968,19 @@ public class M03_GLEventListener implements GLEventListener {
     // Invisible walls
     if (lampTransX > 7) {
       lampTransX = 7;
+      turn180();
     }
     if (lampTransX < -8 ) {
       lampTransX = -8;
+      turn180();
     }
     if (lampTransZ > -6) {
       lampTransZ = -6;
+      turn180();
     }
     if (lampTransZ < -18) {
       lampTransZ = -18;
+      turn180();
     }
 
     translateLamp.setTransform(Mat4Transform.translate(lampTransX,lampTransY,lampTransZ));
@@ -991,6 +991,7 @@ public class M03_GLEventListener implements GLEventListener {
 
     double elapsedTime = getSeconds()-buttonTime;
 
+    rotateFootAngle = poseCalculation(rotateFootAngle, rotateFootAngleNew, elapsedTime);
     rotateAllAngle = poseCalculation(rotateAllAngle, rotateAllAngleNew, elapsedTime);
     rotateSphereBodyAngle = poseCalculation(rotateSphereBodyAngle, rotateSphereBodyAngleNew, elapsedTime);
     rotateUpperBranchAngle = poseCalculation(rotateUpperBranchAngle, rotateUpperBranchAngleNew, elapsedTime);
@@ -999,6 +1000,7 @@ public class M03_GLEventListener implements GLEventListener {
     rotateSphereBody.setTransform(Mat4Transform.rotateAroundZ(rotateSphereBodyAngle));
     rotateUpperBranch.setTransform(Mat4Transform.rotateAroundZ(rotateUpperBranchAngle));
     rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
+    rotateFoot.setTransform(Mat4Transform.rotateAroundY(rotateFootAngle));
 
     lampRoot.update(); // IMPORTANT – the scene graph has changed
   }
@@ -1023,7 +1025,6 @@ public class M03_GLEventListener implements GLEventListener {
     float y = 2.7f;
     float z = 5.0f*(float)(Math.cos(Math.toRadians(elapsedTime*50)));
     return new Vec3(x,y,z);
-    //return new Vec3(5f,3.4f,5f);
   }
 
   // ***************************************************

@@ -104,6 +104,5 @@ resultSpot = resultSpot * 1;
 
 
 result = result + result2 + resultSpot;
-// result = result + result2;
 fragColor = vec4(result, 1.0);
 }

@@ -9,19 +9,22 @@ import java.io.*;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.AudioSystem;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.embed.swing.JFXPanel;
 
 public class M03 extends JFrame implements ActionListener {
 
-  private static final int WIDTH = 1024;
+  private static final int WIDTH = 1524;
   private static final int HEIGHT = 600;
   private static final Dimension dimension = new Dimension(WIDTH, HEIGHT);
   private GLCanvas canvas;
   private M03_GLEventListener glEventListener;
   private final FPSAnimator animator;
   private Camera camera;
-  private AudioInputStream audioInputStream;
-  private Clip clip;
-
+  private Media hit;
+  private MediaPlayer mediaPlayer;
+  final JFXPanel fxPanel = new JFXPanel();
 
   public static void main(String[] args) {
     M03 b1 = new M03("M03");
@@ -41,12 +44,6 @@ public class M03 extends JFrame implements ActionListener {
     canvas.addKeyListener(new MyKeyboardInput(camera));
     getContentPane().add(canvas, BorderLayout.CENTER);
 
-
-    // private File wavFile = new File("C:\\Users\\Jaafer\\Desktop\\UNI\\3D\\Asign\\7_2_scene_graph\\sine.wav");
-    // private AudioClip sound;
-    //
-    // try{sound = Applet.newAudioClip(wavFile.toURL());}
-    // catch(Exception e){e.printStackTrace();}
 
     JMenuBar menuBar=new JMenuBar();
     this.setJMenuBar(menuBar);
@@ -84,6 +81,9 @@ public class M03 extends JFrame implements ActionListener {
       b = new JButton("Jump");
       b.addActionListener(this);
       p.add(b);
+      b = new JButton("Turn 180");
+      b.addActionListener(this);
+      p.add(b);
       b = new JButton("Original Position");
       b.addActionListener(this);
       p.add(b);
@@ -108,16 +108,9 @@ public class M03 extends JFrame implements ActionListener {
   }
 
   public void playSound(String soundName) {
-    try {
-      audioInputStream = AudioSystem.getAudioInputStream(new File(soundName).getAbsoluteFile());
-      clip = AudioSystem.getClip();
-      clip.open(audioInputStream);
-      clip.start();
-    }
-    catch(Exception ex) {
-     System.out.println("Error with playing sound.");
-     ex.printStackTrace();
-    }
+    hit = new Media(new File(soundName).toURI().toString());
+    mediaPlayer = new MediaPlayer(hit);
+    mediaPlayer.play();
   }
 
   public void actionPerformed(ActionEvent e) {
@@ -153,31 +146,33 @@ public class M03 extends JFrame implements ActionListener {
       glEventListener.buttonTime();
       glEventListener.jump();
     }
+    else if (e.getActionCommand().equalsIgnoreCase("Turn 180")) {
+      glEventListener.turn180();
+    }
     else if (e.getActionCommand().equalsIgnoreCase("Original Position")) {
       glEventListener.originalPosition();
     }
     else if (e.getActionCommand().equalsIgnoreCase("Disco Time!")) {
       switch(glEventListener.rng(1,5)) {
         case 1 :
-          playSound("audio\\flying_to_space.wav");
+          playSound("audio\\flying_to_space.mp3");
           break;
         case 2 :
-          playSound("audio\\delegation_you_and_i.wav");
+          playSound("audio\\delegation_you_and_i.mp3");
           break;
         case 3 :
-          playSound("audio\\makoto_lazy_night.wav");
+          playSound("audio\\makoto_lazy_night.mp3");
           break;
         case 4 :
-          playSound("audio\\rose_royce_car_wash.wav");
+          playSound("audio\\rose_royce_car_wash.mp3");
           break;
         case 5 :
-          playSound("audio\\whispers_and_the_beat_goes_on.wav");
+          playSound("audio\\whispers_and_the_beat_goes_on.mp3");
           break;
       }
     }
     else if (e.getActionCommand().equalsIgnoreCase("Kill the Beat")) {
-      clip.stop();
-      clip.setFramePosition(0);
+      mediaPlayer.stop();
     }
     else if(e.getActionCommand().equalsIgnoreCase("quit"))
       System.exit(0);
