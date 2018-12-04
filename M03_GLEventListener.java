@@ -83,6 +83,16 @@ public class M03_GLEventListener implements GLEventListener {
      light2.setBrightness(0.5f);
    }
 
+   public void spotLightOff() {
+     spotLight.setBrightness(0.0f);
+     lampRoot.update();
+   }
+
+   public void spotLightOn() {
+     spotLight.setBrightness(2f);
+     lampRoot.update();
+   }
+
 
 
    public void randomPose() {
@@ -109,7 +119,7 @@ public class M03_GLEventListener implements GLEventListener {
      rotateAllAngleNew = 10;
      rotateSphereBodyAngleNew = -10;
      rotateUpperBranchAngleNew = -10;
-     rotateHeadAngleNew = 50;
+     rotateHeadAngleNew = -30; // 50
      pose = true;
      move = false;
      lampRoot.update();
@@ -141,6 +151,7 @@ public class M03_GLEventListener implements GLEventListener {
      lampTransZNew = lampTransZ + (lampTransZNew*-1);
 
      rotateFootAngleNew = (float)rngAngleX;
+     // Squatting pose
      rotateAllAngleNew = 50;
      rotateSphereBodyAngleNew = -50;
      rotateUpperBranchAngleNew = -60;
@@ -182,23 +193,22 @@ public class M03_GLEventListener implements GLEventListener {
   private Mat4 perspective;
   private Model floor, cubeWindow, danceFloor, sphere, sphereAfro, sphereLong;
   private Model cube, cubeBeige, cubeWood, cubeWoodLegs, cubeFloor, cubeBlackB, cubeTS, cubeDjBooth, cubeWall;
-  private Light light, light2, spotLight;
+  private Light light, light2, lightMouth, spotLight;
   private SGNode lampRoot, glassesRoot, tableRoot, wallRoot, boothRoot, discoRoot;
+  private DiscoBall disco;
+  private Table table;
+  private Wall wall;
+  private DjBooth booth;
+  private Glasses glasses;
 
 
-  private TransformNode translateX, translateLamp;
+  private TransformNode translateLamp;
   private TransformNode rotateFoot, rotateAll, rotateSphereBody, rotateUpperBranch, rotateHead;
-  private TransformNode translateWall;
-  private TransformNode translateTable;
-  private TransformNode translateBooth, rotateBooth;
-  private TransformNode translateDisco, rotateDisco;
-  private float xPosition = 0;
   private float rotateFootAngleStart = -15, rotateFootAngle = rotateFootAngleStart;
   private float rotateAllAngleStart = 35, rotateAllAngle = rotateAllAngleStart;
   private float rotateSphereBodyStart = -30, rotateSphereBodyAngle = rotateSphereBodyStart;
   private float rotateUpperAngleStart = -40, rotateUpperBranchAngle = rotateUpperAngleStart;
   private float rotateHeadAngleStart = 10, rotateHeadAngle = rotateHeadAngleStart;
-  private float rotateDiscoAngleStart = 10, rotateDiscoAngle = rotateDiscoAngleStart;
   private float rotateAllAngleNew, rotateSphereBodyAngleNew, rotateUpperBranchAngleNew, rotateHeadAngleNew;
 
   private float lampTransX = 0.5f;
@@ -221,12 +231,13 @@ public class M03_GLEventListener implements GLEventListener {
     int[] textureId5 = TextureLibrary.loadTexture(gl, "textures/beige.jpg");
     int[] textureId6 = TextureLibrary.loadTexture(gl, "textures/grayafro.jpg");
     int[] textureId7 = TextureLibrary.loadTexture(gl, "textures/wood.jpg");
-    int[] textureId8 = TextureLibrary.loadTexture(gl, "textures/moon.jpg");
+    int[] textureId8 = TextureLibrary.loadTexture(gl, "textures/moon2.jpg");
     int[] textureId9 = TextureLibrary.loadTexture(gl, "textures/dancefloor.jpg");
     int[] textureId10 = TextureLibrary.loadTexture(gl, "textures/container2_specular.jpg");
     int[] textureId11 = TextureLibrary.loadTexture(gl, "textures/speaker.jpg");
     int[] textureId12 = TextureLibrary.loadTexture(gl, "textures/dj_booth.jpg");
     int[] textureId13 = TextureLibrary.loadTexture(gl, "textures/wall.jpg");
+    int[] textureId14 = TextureLibrary.loadTexture(gl, "textures/cloudy2.jpg");
     // Constant Variables
 
     // Lamp
@@ -267,21 +278,6 @@ public class M03_GLEventListener implements GLEventListener {
     float glassesTransZ = 0f * lampScale;
     float glassesScale = 0.15f;
 
-    // Floor
-    float floorSize = 40f;
-
-    // Table
-    float tableLength = 25f;
-    float tableDepth = 15f;
-
-    // DJ Booth
-    float boothScale = 0.8f;
-    float djHeight = 3f * boothScale;
-
-    // Disco Ball
-    float discoScale = 0.4f;
-    float discoBaseHeight = 1f * discoScale;
-
     // Dance Floor
     float danceFloorScale = 0.3f;
 
@@ -302,7 +298,7 @@ public class M03_GLEventListener implements GLEventListener {
     Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
     Shader shader = new Shader(gl, "vs_tt_05.txt", "fs_tt_uncoloured.txt");
     Material material = new Material(new Vec3(0.0f, 0.5f, 0.81f), new Vec3(0.0f, 0.5f, 0.81f), new Vec3(0.3f, 0.3f, 0.3f), 32.0f);
-    Mat4 modelMatrix = Mat4Transform.scale(floorSize,1f,floorSize);
+    Mat4 modelMatrix = Mat4Transform.scale(40f,1f,40f);
     floor = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId0);
 
 
@@ -319,16 +315,19 @@ public class M03_GLEventListener implements GLEventListener {
 
 
     mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
-    shader = new Shader(gl, "vs_cube_04.txt", "fs_cube_04.txt");
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
+    shader = new Shader(gl, "vs_cube_moving.txt", "fs_cube_moving.txt");
+    cubeWindow = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId8, textureId14);
+
+    shader = new Shader(gl, "vs_cube_04.txt", "fs_cube_04.txt");
     cubeWood = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId7);
     cube = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId1);
     cubeBeige = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId5);
     cubeFloor = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId0);
     cubeBlackB = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId10);
     cubeWall = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId13);
-    cubeWindow = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId8);
+
 
     mesh = new Mesh(gl, CubeTableLeg.vertices.clone(), CubeTableLeg.indices.clone());
     cubeWoodLegs = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId7);
@@ -426,9 +425,6 @@ public class M03_GLEventListener implements GLEventListener {
     // LIGHT //
     // LIGHT //
     // LIGHT //
-    float lightTransX =(lampScale*3f)+(0.5f);
-    float lightTransY =(lampScale*16.6f)-1+(5.5f);
-    float lightTransZ =(lampScale*0f)+(-12.5f);
     TransformNode translateFrontHead = new TransformNode("translate(0.5,7,0)",Mat4Transform.translate(0.5f,0.2f,0));
 
     NameNode lampLight = new NameNode("lamp light");
@@ -436,6 +432,16 @@ public class M03_GLEventListener implements GLEventListener {
     m = Mat4.multiply(m, Mat4Transform.translate(0,0,0));
     TransformNode lampLightTransform = new TransformNode("scale(5,5,5);translate(0,0.5,0)", m);
     LightNode cube6Node = new LightNode("Light(6)", spotLight);
+
+
+
+    lightMouth = new Light(gl);
+    lightMouth.setCamera(camera);
+    NameNode lampLightMouth = new NameNode("lamp light");
+    m = Mat4Transform.scale(0.3f,0.3f,0.5f);
+    m = Mat4.multiply(m, Mat4Transform.translate(0,0,0));
+    TransformNode lampLightMouthTransform = new TransformNode("scale(5,5,5);translate(0,0.5,0)", m);
+    LightNode cube7Node = new LightNode("Light(6)", lightMouth);
 
     // CAMERA //
     // CAMERA //
@@ -452,72 +458,9 @@ public class M03_GLEventListener implements GLEventListener {
     //GLASSES ROOT//
     //GLASSES ROOT//
     //GLASSES ROOT//
-    glassesRoot = new NameNode("Glasses structure");
     TransformNode translateGlasses = new TransformNode("translate(0.5,7,0)",Mat4Transform.translate(glassesTransX,glassesTransY,glassesTransZ));
-
-    //LEFT LENS//
-    //LEFT LENS//
-    //LEFT LENS//
-    NameNode leftLens = new NameNode("leftLens");
-    m = Mat4Transform.scale(glassesScale*0.25f,glassesScale*3,glassesScale*3);
-    m = Mat4.multiply(Mat4Transform.translate(0,0f,glassesScale*1.5f), m);
-    TransformNode leftLensTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
-    ModelNode sphere0NodeG = new ModelNode("Spere(table body)", sphere);
-
-    //RIGHT LENS//
-    //RIGHT LENS//
-    //RIGHT LENS//
-    NameNode rightLens = new NameNode("rightLens");
-    m = Mat4Transform.scale(glassesScale*0.25f,glassesScale*3,glassesScale*3);
-    m = Mat4.multiply(Mat4Transform.translate(0,0f,glassesScale*-1.5f), m);
-    TransformNode rightLensTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
-    ModelNode sphere1NodeG = new ModelNode("Sphere(table body)", sphere);
-
-    //MIDDLE BRIDGE//
-    //MIDDLE BRIDGE//
-    //MIDDLE BRIDGE//
-    NameNode middleBridge = new NameNode("middleBridge");
-    m = Mat4Transform.scale(glassesScale*0.25f,glassesScale*0.5f,glassesScale*0.5f);
-    m = Mat4.multiply(Mat4Transform.translate(0,0f,0), m);
-    TransformNode middleBridgeTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
-    ModelNode cube3NodeG = new ModelNode("Cube(table body)", cubeWall);
-
-    //LEFT ARM//
-    //LEFT ARM//
-    //LEFT ARM//
-    NameNode leftArm = new NameNode("leftArm");
-    m = Mat4Transform.scale(glassesScale*3f,glassesScale*0.5f,glassesScale*0.25f);
-    m = Mat4.multiply(Mat4Transform.translate(glassesScale*-1.5f,0f,glassesScale*2.75f), m);
-    TransformNode leftArmTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
-    ModelNode cube5NodeG = new ModelNode("Cube(table body)", cubeWall);
-
-    //RIGHT ARM//
-    //RIGHT ARM//
-    //RIGHT ARM//
-    NameNode rightArm = new NameNode("rightArm");
-    m = Mat4Transform.scale(glassesScale*3f,glassesScale*0.5f,glassesScale*0.25f);
-    m = Mat4.multiply(Mat4Transform.translate(glassesScale*-1.5f,0f,glassesScale*-2.75f), m);
-    TransformNode rightArmTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
-    ModelNode cube6NodeG = new ModelNode("Cube(table body)", cubeWall);
-
-    // glassesRoot
-    glassesRoot.addChild(middleBridge);
-      middleBridge.addChild(middleBridgeTransform);
-        middleBridgeTransform.addChild(cube3NodeG);
-      middleBridge.addChild(leftLens);
-        leftLens.addChild(leftLensTransform);
-          leftLensTransform.addChild(sphere0NodeG);
-        leftLens.addChild(leftArm);
-          leftArm.addChild(leftArmTransform);
-            leftArmTransform.addChild(cube5NodeG);
-      middleBridge.addChild(rightLens);
-        rightLens.addChild(rightLensTransform);
-          rightLensTransform.addChild(sphere1NodeG);
-        rightLens.addChild(rightArm);
-          rightArm.addChild(rightArmTransform);
-            rightArmTransform.addChild(cube6NodeG);
-
-    glassesRoot.update();
+    glasses = new Glasses(sphere, cubeWall);
+    glassesRoot = glasses.glassesInit();
 
 
     // lampRoot
@@ -556,8 +499,9 @@ public class M03_GLEventListener implements GLEventListener {
                                     translateFrontHead.addChild(lampLightTransform);
                                       lampLightTransform.addChild(lampLight);
                                         lampLight.addChild(cube6Node);
-                                    // translateFrontHead.addChild(lampCamera);
-                                    //   lampCamera.addChild(cube7Node);
+                                    translateFrontHead.addChild(lampLightMouthTransform);
+                                      lampLightMouthTransform.addChild(lampLightMouth);
+                                        lampLightMouth.addChild(cube7Node);
     lampRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
     // lampRoot.print(0, false);
     // System.exit(0);
@@ -569,281 +513,31 @@ public class M03_GLEventListener implements GLEventListener {
 
 
 
-
-
-
-
     // TABLE ROOT //
     // TABLE ROOT //
     // TABLE ROOT //
-    tableRoot = new NameNode("table structure");
-    translateTable = new TransformNode("translate(0,0,0)", Mat4Transform.translate(0,0,(-0.5f*floorSize) + (tableDepth*0.5f)));
+    table = new Table(cubeWood, cubeWoodLegs);
+    tableRoot = table.tableInit();
 
-    // TABLE BODY //
-    // TABLE BODY //
-    // TABLE BODY //
-    NameNode tableBody = new NameNode("tableBody");
-    m = Mat4Transform.scale(tableLength,1,tableDepth);
-    m = Mat4.multiply(Mat4Transform.translate(0,5f,0), m);
-    TransformNode tableBodyTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
-    ModelNode cube0NodeT = new ModelNode("Cube(table body)", cubeWood);
-
-    // TABLE LEG BACK LEFT //
-    // TABLE LEG BACK LEFT //
-    // TABLE LEG BACK LEFT //
-    NameNode tableLegBL = new NameNode("tableLegBL");
-    m = Mat4Transform.scale(1f,5f,1f);
-    m = Mat4.multiply(Mat4Transform.translate((0.5f*-tableLength)+0.5f,2.0f,(0.5f*-tableDepth)+0.5f), m);
-    TransformNode tableLegBLTransform = new TransformNode("translate(-6.5,2.5,-9.5);scale(1,5,1)", m);
-    ModelNode cube1NodeT = new ModelNode("Cube(table leg back left)", cubeWood);
-
-    // TABLE LEG BACK RIGHT //
-    // TABLE LEG BACK RIGHT //
-    // TABLE LEG BACK RIGHT //
-    NameNode tableLegBR = new NameNode("tableLegBR");
-    m = Mat4Transform.scale(1f,5f,1f);
-    m = Mat4.multiply(Mat4Transform.translate((0.5f*tableLength)-0.5f,2.0f,(0.5f*-tableDepth)+0.5f), m);
-    TransformNode tableLegBRTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube2NodeT = new ModelNode("Cube(table leg back right)", cubeWood);
-
-    // TABLE LEG FRONT RIGHT //
-    // TABLE LEG FRONT RIGHT //
-    // TABLE LEG FRONT RIGHT //
-    NameNode tableLegFR = new NameNode("tableLegFR");
-    m = Mat4Transform.scale(1f,5f,1f);
-    m = Mat4.multiply(Mat4Transform.translate((0.5f*tableLength)-0.5f,2.0f,(0.5f*tableDepth)-0.5f), m);
-    TransformNode tableLegFRTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube3NodeT = new ModelNode("Cube(table leg front right)", cubeWood);
-
-    // TABLE LEG FRONT LEFT //
-    // TABLE LEG FRONT LEFT //
-    // TABLE LEG FRONT LEFT //
-    NameNode tableLegFL = new NameNode("tableLegFL");
-    m = Mat4Transform.scale(1f,5f,1f);
-    m = Mat4.multiply(Mat4Transform.translate((0.5f*-tableLength)+0.5f,2.0f,(0.5f*tableDepth)-0.5f), m);
-    TransformNode tableLegFLTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube4NodeT = new ModelNode("Cube(table leg front left)", cubeWood);
-
-
-    tableRoot.addChild(translateTable);
-      translateTable.addChild(tableBody);
-        tableBody.addChild(tableBodyTransform);
-          tableBodyTransform.addChild(cube0NodeT);
-        tableBody.addChild(tableLegBL);
-          tableLegBL.addChild(tableLegBLTransform);
-            tableLegBLTransform.addChild(cube1NodeT);
-        tableBody.addChild(tableLegBR);
-          tableLegBR.addChild(tableLegBRTransform);
-            tableLegBRTransform.addChild(cube2NodeT);
-        tableBody.addChild(tableLegFR);
-          tableLegFR.addChild(tableLegFRTransform);
-            tableLegFRTransform.addChild(cube3NodeT);
-        tableBody.addChild(tableLegFL);
-          tableLegFL.addChild(tableLegFLTransform);
-            tableLegFLTransform.addChild(cube4NodeT);
-
-    tableRoot.update();
 
     // WALL ROOT //
     // WALL ROOT //
     // WALL ROOT //
-    wallRoot = new NameNode("wall structure");
-    translateWall = new TransformNode("translate(0,0,0)", Mat4Transform.translate(0,0,-floorSize*0.25f));
-
-    // BOTTOM //
-    // BOTTOM //
-    // BOTTOM //
-    NameNode bottomWall = new NameNode("bottomWall");
-    m = Mat4Transform.scale(14f,6f,0f);
-    m = Mat4.multiply(Mat4Transform.translate(0f,3f,-10f), m);
-    TransformNode bottomWallTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube0NodeW = new ModelNode("Cube(bottom wall)", cubeWall);
-
-    // LEFT //
-    // LEFT //
-    // LEFT //
-    NameNode leftWall = new NameNode("leftWall");
-    m = Mat4Transform.scale(13f,20f,0f);
-    m = Mat4.multiply(Mat4Transform.translate(-floorSize/2 + 6.5f,10f,-10f), m);
-    TransformNode leftWallTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube1NodeW = new ModelNode("Cube(left wall)", cubeWall);
-
-    // RIGHT //
-    // RIGHT //
-    // RIGHT //
-    NameNode rightWall = new NameNode("rightWall");
-    m = Mat4Transform.scale(13f,20f,0f);
-    m = Mat4.multiply(Mat4Transform.translate(floorSize/2 - 6.5f,10f,-10f), m);
-    TransformNode rightWallTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube2NodeW = new ModelNode("Cube(right wall)", cubeWall);
-
-    // TOP //
-    // TOP //
-    // TOP //
-    NameNode topWall = new NameNode("topWall");
-    m = Mat4Transform.scale(14f,3f,0f);
-    m = Mat4.multiply(Mat4Transform.translate(0f,18.5f,-10f), m);
-    TransformNode topWallTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube3NodeW = new ModelNode("Cube(top wall)", cubeWall);
-
-    // CENTRAL //
-    // CENTRAL //
-    // CENTRAL //
-    NameNode centralWall = new NameNode("centralWall");
-    m = Mat4Transform.scale(14f,11f,0f);
-    m = Mat4.multiply(Mat4Transform.translate(0f,11.5f,-10f), m);
-    TransformNode centralWallTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube4NodeW = new ModelNode("Cube(central wall)", cubeWindow);
-
-    wallRoot.addChild(translateWall);
-      translateWall.addChild(bottomWall);
-        bottomWall.addChild(bottomWallTransform);
-          bottomWallTransform.addChild(cube0NodeW);
-      translateWall.addChild(leftWall);
-        leftWall.addChild(leftWallTransform);
-          leftWallTransform.addChild(cube1NodeW);
-      translateWall.addChild(rightWall);
-        rightWall.addChild(rightWallTransform);
-          rightWallTransform.addChild(cube2NodeW);
-      translateWall.addChild(topWall);
-        topWall.addChild(topWallTransform);
-          topWallTransform.addChild(cube3NodeW);
-      translateWall.addChild(centralWall);
-        centralWall.addChild(centralWallTransform);
-          centralWallTransform.addChild(cube4NodeW);
-
-
-    wallRoot.update();
-
-
-
+    wall = new Wall(cubeWall, cubeWindow);
+    wallRoot = wall.wallInit();
 
     // BOOTH ROOT //
     // BOOTH ROOT //
     // BOOTH ROOT //
-    boothRoot = new NameNode("booth structure");
-    translateBooth = new TransformNode("translate(0,0,0)", Mat4Transform.translate(10f,5.5f,-12.5f));
-    rotateBooth = new TransformNode("rotateAroundY(90)", Mat4Transform.rotateAroundY(90f));
-
-    // DJ //
-    // DJ //
-    // DJ //
-    NameNode dj = new NameNode("dj");
-    m = Mat4Transform.scale(boothScale*9f,boothScale*3f,boothScale*4f);
-    m = Mat4.multiply(Mat4Transform.translate(0f,boothScale*1.5f,0f), m);
-    TransformNode djTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube0Booth = new ModelNode("Cube(dj)", cubeDjBooth);
-
-    // LEFT SPEAKER //
-    // LEFT SPEAKER //
-    // LEFT SPEAKER //
-    NameNode leftSpeaker = new NameNode("leftSpeaker");
-    m = Mat4Transform.scale(boothScale*3f,boothScale*7f,boothScale*4f);
-    m = Mat4.multiply(Mat4Transform.translate(boothScale*-6f,boothScale*3.5f,0f), m);
-    TransformNode leftSpeakerTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube1Booth = new ModelNode("Cube(left speaker)", cubeTS);
-
-    // RIGHT SPEAKER //
-    // RIGHT SPEAKER //
-    // RIGHT SPEAKER //
-    NameNode rightSpeaker = new NameNode("rightSpeaker");
-    m = Mat4Transform.scale(boothScale*3f,boothScale*7f,boothScale*4f);
-    m = Mat4.multiply(Mat4Transform.translate(boothScale*6f,boothScale*3.5f,0f), m);
-    TransformNode rightSpeakerTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube2Booth = new ModelNode("Cube(right speaker)", cubeTS);
-
-    boothRoot.addChild(translateBooth);
-      translateBooth.addChild(rotateBooth);
-        rotateBooth.addChild(dj);
-          dj.addChild(djTransform);
-            djTransform.addChild(cube0Booth);
-          dj.addChild(leftSpeaker);
-            leftSpeaker.addChild(leftSpeakerTransform);
-              leftSpeakerTransform.addChild(cube1Booth);
-          dj.addChild(rightSpeaker);
-            rightSpeaker.addChild(rightSpeakerTransform);
-              rightSpeakerTransform.addChild(cube2Booth);
-
-
-    boothRoot.update();
-
+    booth = new DjBooth(cubeDjBooth, cubeTS);
+    boothRoot = booth.djBoothInit();
 
 
     // DISCO BALL ROOT //
     // DISCO BALL ROOT //
     // DISCO BALL ROOT //
-    discoRoot = new NameNode("disco structure");
-    translateDisco = new TransformNode("translate(0,0,0)", Mat4Transform.translate(-9f,5.5f,-14.5f));
-
-    // DISCO BASE //
-    // DISCO BASE //
-    // DISCO BASE //
-    NameNode discoBase = new NameNode("discoBase");
-    m = Mat4Transform.scale(discoScale*6f,discoScale*1f,discoScale*3f);
-    m = Mat4.multiply(Mat4Transform.translate(0f,discoScale*0.5f,0f), m);
-    TransformNode discoBaseTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube0Disco = new ModelNode("Cube(discoBase)", cubeBlackB);
-
-    // DISCO STAND VERTICAL //
-    // DISCO STAND VERTICAL //
-    // DISCO STAND VERTICAL //
-    NameNode discoStandV = new NameNode("discoStandV");
-    m = Mat4Transform.scale(discoScale*0.1f,discoScale*16f,discoScale*0.1f);
-    m = Mat4.multiply(Mat4Transform.translate(0f,discoScale*8.5f,0f), m);
-    TransformNode discoStandVTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube1Disco = new ModelNode("Cube(discoStandV)", cubeFloor);
-
-    // DISCO STAND HORIZONTAL //
-    // DISCO STAND HORIZONTAL //
-    // DISCO STAND HORIZONTAL //
-    NameNode discoStandH = new NameNode("discoStandH");
-    m = Mat4Transform.scale(discoScale*5f,discoScale*0.1f,discoScale*0.1f);
-    m = Mat4.multiply(Mat4Transform.translate(discoScale*2.5f,discoScale*16.5f,0f), m);
-    TransformNode discoStandHTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube2Disco = new ModelNode("Cube(discoStandH)", cubeFloor);
-
-    // DISCO STRING //
-    // DISCO STRING //
-    // DISCO STRING //
-    NameNode discoString = new NameNode("discoString");
-    m = Mat4Transform.scale(discoScale*0.1f,discoScale*1f,discoScale*0.1f);
-    m = Mat4.multiply(Mat4Transform.translate(discoScale*5f,discoScale*16f,0f), m);
-    TransformNode discoStringTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube3Disco = new ModelNode("Cube(discoString)", cubeFloor);
-
-    // DISCO BALL //
-    // DISCO BALL //
-    // DISCO BALL //
-    TransformNode translateBelowString = new TransformNode("translate(-0.10,7.50,0)",Mat4Transform.translate(discoScale*5f,discoScale*13.5f,0f));
-
-    rotateDisco = new TransformNode("rotateAroundY("+rotateHeadAngle+")",Mat4Transform.rotateAroundY(rotateHeadAngle));
-    NameNode discoBall = new NameNode("discoBall");
-    m = Mat4Transform.scale(discoScale*4f,discoScale*4f,discoScale*4f);
-    m = Mat4.multiply(Mat4Transform.translate(0f,0f,0f), m);
-    TransformNode discoBallTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube4Disco = new ModelNode("Cube(discoBall)", sphere);
-
-    discoRoot.addChild(translateDisco);
-      translateDisco.addChild(discoBase);
-        discoBase.addChild(discoBaseTransform);
-          discoBaseTransform.addChild(cube0Disco);
-        discoBase.addChild(discoStandV);
-          discoStandV.addChild(discoStandVTransform);
-            discoStandVTransform.addChild(cube1Disco);
-          discoStandV.addChild(discoStandH);
-            discoStandH.addChild(discoStandHTransform);
-              discoStandHTransform.addChild(cube2Disco);
-            discoStandH.addChild(discoString);
-              discoString.addChild(discoStringTransform);
-                discoStringTransform.addChild(cube3Disco);
-              discoString.addChild(translateBelowString);
-                translateBelowString.addChild(rotateDisco);
-                  rotateDisco.addChild(discoBall);
-                    discoBall.addChild(discoBallTransform);
-                      discoBallTransform.addChild(cube4Disco);
-
-    discoRoot.update();
-
+    disco = new DiscoBall(cubeBlackB, cubeFloor, sphere);
+    discoRoot = disco.discoInit();
 
 
 
@@ -860,8 +554,19 @@ public class M03_GLEventListener implements GLEventListener {
     float cosA = (float)Math.cos(radA);
     float sinA = (float)Math.sin(radA);
 
+    double rad1 = Math.toRadians(rotateHeadAngle);
+    double rad2 = Math.toRadians(rotateAllAngle);
+    double rad3 = Math.toRadians(rotateSphereBodyAngle);
+    double rad4 = Math.toRadians(rotateUpperBranchAngle);
+    float cos1 = (float)Math.cos(rad1);
+    float cos2 = (float)Math.cos(rad2);
+    float cos3 = (float)Math.cos(rad3);
+    float cos4 = (float)Math.cos(rad4);
 
-    spotCamera.setPosition(new Vec3(lampTransX+1f - 20*cosA,lampTransY+4f,lampTransZ + 20*sinA));
+    float cosTotal = (cos1 * 5) + (cos2 * 5) + (cos3 * 5) + (cos4 * 5);
+
+
+    spotCamera.setPosition(new Vec3(lampTransX+1f - 20*cosA,lampTransY+ 4f,lampTransZ + 20*sinA));
     spotCamera.setTarget(new Vec3(lampTransX+4f,lampTransY, -12.5f));
 
 
@@ -898,8 +603,10 @@ public class M03_GLEventListener implements GLEventListener {
 
   private void updateBranches() {
     double elapsedTime = getSeconds()-startTime;
+    float rotateDiscoAngle;
+    float rotateDiscoAngleStart = disco.getAngleStart();
     rotateDiscoAngle = rotateDiscoAngleStart + (float)elapsedTime*50;
-    rotateDisco.setTransform(Mat4Transform.rotateAroundY(rotateDiscoAngle));
+    disco.setRotateTransform(rotateDiscoAngle);
     discoRoot.update();
   }
 
@@ -929,10 +636,12 @@ public class M03_GLEventListener implements GLEventListener {
 
     if (lampTransY >= 5.5f) {
       jumpingPose();
+      // spotLightOff();
       lampTransY = lampTransY + (lampTransY*(float)Math.sin(elapsedTime*10f))/50;
       System.out.println(lampTransY);
       if (lampTransY < 5.5f) {
         lampTransY = 5.49f;
+        // spotLightOn();
         originPose();
         buttonTime = getSeconds() - 0.5;
         jumpV = false;

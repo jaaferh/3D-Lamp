@@ -26,6 +26,7 @@ struct Light2 {
 struct SpotLight {
   vec3 position;
   vec3 direction;
+  float brightness;
   float cutOff;
   float outerCutOff;
 };
@@ -101,7 +102,7 @@ void main() {
 
   // result spotlight
   vec3 resultSpot = diffuseSpot + specularSpot;
-  resultSpot = resultSpot * 2;
+  resultSpot = resultSpot * spotLight.brightness;
 
 
   result = result + result2 + resultSpot;

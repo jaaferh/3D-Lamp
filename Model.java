@@ -15,6 +15,7 @@ public class Model {
   private Light light;
   private Light light2;
   private Light spotLight;
+  private double startTime;
 
   public Model(GL3 gl, Camera camera, Light light, Light light2, Light spotLight, Shader shader, Material material, Mat4 modelMatrix, Mesh mesh, int[] textureId1, int[] textureId2) {
     this.mesh = mesh;
@@ -56,6 +57,10 @@ public class Model {
     this.spotLight = spotLight;
   }
 
+  private double getSeconds() {
+    return System.currentTimeMillis()/1000.0;
+  }
+
   public void render(GL3 gl, Mat4 modelMatrix) {
     Mat4 mvpMatrix = Mat4.multiply(camera.getPerspectiveMatrix(), Mat4.multiply(camera.getViewMatrix(), modelMatrix));
     shader.use(gl);
@@ -77,6 +82,7 @@ public class Model {
     shader.setVec3(gl, "spotLight.direction", spotLight.getCamera().getFront());
     shader.setFloat(gl, "spotLight.cutOff", (float)(Math.cos(Math.toRadians(10f))));
     shader.setFloat(gl, "spotLight.outerCutOff", (float)(Math.cos(Math.toRadians(11f))));
+    shader.setFloat(gl, "spotLight.brightness", spotLight.getBrightness());
 
 
 
@@ -84,6 +90,18 @@ public class Model {
     shader.setVec3(gl, "material.diffuse", material.getDiffuse());
     shader.setVec3(gl, "material.specular", material.getSpecular());
     shader.setFloat(gl, "material.shininess", material.getShininess());
+
+    double elapsedTime = getSeconds() - startTime;
+
+
+    double t = elapsedTime*0.05;  // *0.1 slows it down a bit
+    float offsetX = (float)(t - Math.floor(t));
+    float offsetY = 0.0f;
+    shader.setFloat(gl, "offset", offsetX, offsetY);
+
+    shader.setInt(gl, "second_moving_texture", 0);
+    shader.setInt(gl, "second_moving_texture", 1);
+
 
     if (textureId1!=null) {
       shader.setInt(gl, "first_texture", 0);  // be careful to match these with GL_TEXTURE0 and GL_TEXTURE1
