@@ -68,8 +68,10 @@ public class Model {
     shader.setVec3(gl, "light.ambient", light.getMaterial().getAmbient());
     shader.setVec3(gl, "light.diffuse", light.getMaterial().getDiffuse());
     shader.setVec3(gl, "light.specular", light.getMaterial().getSpecular());
+    shader.setFloat(gl, "light.brightness", light.getBrightness());
 
-    shader.setVec3(gl, "light2.position", light.getPosition());
+    shader.setVec3(gl, "light2.position", light2.getPosition());
+    shader.setFloat(gl, "light2.brightness", light2.getBrightness());
 
     shader.setVec3(gl, "spotLight.position", spotLight.getSpotPosition());
     shader.setVec3(gl, "spotLight.direction", spotLight.getCamera().getFront());

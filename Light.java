@@ -12,6 +12,7 @@ public class Light {
   private Camera camera;
   private Mat4 modelMatrix;
   private Vec3 spotPosition;
+  private float brightness;
 
   public Light(GL3 gl) {
     material = new Material();
@@ -23,6 +24,7 @@ public class Light {
     model = new Mat4(1);
     shader = new Shader(gl, "vs_light_01.txt", "fs_light_01.txt");
     modelMatrix = new Mat4(1);
+    brightness = 0.5f;
     fillBuffers(gl);
   }
 
@@ -73,6 +75,14 @@ public class Light {
 
   public Camera getCamera() {
     return camera;
+  }
+
+  public void setBrightness(float b) {
+    brightness = b;
+  }
+
+  public float getBrightness(){
+    return brightness;
   }
 
   public void render(GL3 gl, Mat4 modelMatrix) {

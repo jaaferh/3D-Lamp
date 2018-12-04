@@ -130,16 +130,16 @@ public class M03 extends JFrame implements ActionListener {
       canvas.requestFocusInWindow();
     }
     else if (e.getActionCommand().equalsIgnoreCase("Left Light Off")) {
-      glEventListener.light1Off();
-    }
-    else if (e.getActionCommand().equalsIgnoreCase("Left Light On")) {
-      glEventListener.light1On();
-    }
-    else if (e.getActionCommand().equalsIgnoreCase("Right Light Off")) {
       glEventListener.light2Off();
     }
-    else if (e.getActionCommand().equalsIgnoreCase("Right Light On")) {
+    else if (e.getActionCommand().equalsIgnoreCase("Left Light On")) {
       glEventListener.light2On();
+    }
+    else if (e.getActionCommand().equalsIgnoreCase("Right Light Off")) {
+      glEventListener.light1Off();
+    }
+    else if (e.getActionCommand().equalsIgnoreCase("Right Light On")) {
+      glEventListener.light1On();
     }
     else if (e.getActionCommand().equalsIgnoreCase("Random Pose")) {
       glEventListener.buttonTime();

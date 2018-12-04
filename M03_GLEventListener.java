@@ -69,35 +69,19 @@ public class M03_GLEventListener implements GLEventListener {
    */
 
    public void light1Off() {
-     Material m = new Material();
-     m.setAmbient(0.0f, 0.0f, 0.0f);
-     m.setDiffuse(0.0f, 0.0f, 0.0f);
-     m.setSpecular(0.0f, 0.0f, 0.0f);
-     light.setMaterial(m);
+     light.setBrightness(0.0f);
    }
 
    public void light1On() {
-     Material m = new Material();
-     m.setAmbient(0.5f, 0.5f, 0.5f);
-     m.setDiffuse(0.8f, 0.8f, 0.8f);
-     m.setSpecular(0.8f, 0.8f, 0.8f);
-     light.setMaterial(m);
+     light.setBrightness(0.5f);
    }
 
    public void light2Off() {
-     Material m = new Material();
-     m.setAmbient(0.0f, 0.0f, 0.0f);
-     m.setDiffuse(0.0f, 0.0f, 0.0f);
-     m.setSpecular(0.0f, 0.0f, 0.0f);
-     light2.setMaterial(m);
+     light2.setBrightness(0.0f);
    }
 
    public void light2On() {
-     Material m = new Material();
-     m.setAmbient(0.5f, 0.5f, 0.5f);
-     m.setDiffuse(0.8f, 0.8f, 0.8f);
-     m.setSpecular(0.8f, 0.8f, 0.8f);
-     light2.setMaterial(m);
+     light2.setBrightness(0.5f);
    }
 
 

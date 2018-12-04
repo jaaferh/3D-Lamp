@@ -15,16 +15,17 @@ struct Light {
   vec3 ambient;
   vec3 diffuse;
   vec3 specular;
+  float brightness;
 };
 
 struct Light2 {
   vec3 position;
+  float brightness;
 };
 
 struct SpotLight {
   vec3 position;
   vec3 direction;
-
   float cutOff;
   float outerCutOff;
 };
@@ -41,6 +42,7 @@ struct Material {
 };
 
 uniform Material material;
+
 
 void main() {
 
@@ -91,11 +93,11 @@ void main() {
 
   // result
   vec3 result = ambient + diffuse + specular;
-  result = result * 0.5;
+  result = result * light.brightness;
 
   // result2
   vec3 result2 = ambient + diffuse2 + specular2;
-  result2 = result2 * 0.5;
+  result2 = result2 * light2.brightness;
 
   // result spotlight
   vec3 resultSpot = diffuseSpot + specularSpot;
