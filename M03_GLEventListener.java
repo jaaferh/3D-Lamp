@@ -44,7 +44,7 @@ public class M03_GLEventListener implements GLEventListener {
     float aspect = (float)width/(float)height;
     camera.setPerspectiveMatrix(Mat4Transform.perspective(45, aspect));
     // camera.setTarget(new Vec3(0f,6f,-10f));
-    spotCamera.setPerspectiveMatrix(Mat4Transform.perspective(45, aspect));
+    spotCamera.setPerspectiveMatrix(Mat4Transform.perspective(1, aspect));
   }
 
   /* Draw */
@@ -290,11 +290,13 @@ public class M03_GLEventListener implements GLEventListener {
     light2.setCamera(camera);
 
     spotCamera = new Camera(Camera.DEFAULT_POSITION, Camera.DEFAULT_TARGET, Camera.DEFAULT_UP);
+
     spotCamera.setPosition(new Vec3(lampTransX+1f,lampTransY+4f,lampTransZ));
-    spotCamera.setTarget(new Vec3(lampTransX+4f,lampTransY, -12.5f));
+    // spotCamera.setTarget(new Vec3(lampTransX+2f,lampTransY,-12.5f));
 
     spotLight = new Light(gl);
     spotLight.setCamera(spotCamera);
+
 
 
     Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
@@ -435,8 +437,13 @@ public class M03_GLEventListener implements GLEventListener {
     // CAMERA //
     // CAMERA //
     // CAMERA //
-    NameNode lampCamera = new NameNode("lamp camera");
-    CameraNode cube7Node = new CameraNode("Light(6)", spotCamera);
+    // NameNode lampCamera = new NameNode("lamp camera");
+    // CameraNode cube7Node = new CameraNode("Light(6)", spotCamera);
+
+
+
+
+
 
 
     //GLASSES ROOT//
@@ -546,8 +553,8 @@ public class M03_GLEventListener implements GLEventListener {
                                     translateFrontHead.addChild(lampLightTransform);
                                       lampLightTransform.addChild(lampLight);
                                         lampLight.addChild(cube6Node);
-                                    translateFrontHead.addChild(lampCamera);
-                                      lampCamera.addChild(cube7Node);
+                                    // translateFrontHead.addChild(lampCamera);
+                                    //   lampCamera.addChild(cube7Node);
     lampRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
     // lampRoot.print(0, false);
     // System.exit(0);
@@ -845,6 +852,14 @@ public class M03_GLEventListener implements GLEventListener {
 
   private void render(GL3 gl) {
     gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+
+    double radA = Math.toRadians(rotateFootAngle);
+    float cosA = (float)Math.cos(radA);
+    float sinA = (float)Math.sin(radA);
+
+
+    spotCamera.setPosition(new Vec3(lampTransX+1f - 20*cosA,lampTransY+4f,lampTransZ + 20*sinA));
+    spotCamera.setTarget(new Vec3(lampTransX+4f,lampTransY, -12.5f));
 
 
 

@@ -103,7 +103,7 @@ vec3 resultSpot = diffuseSpot + specularSpot;
 resultSpot = resultSpot * 1;
 
 
-// result = result + result2 + resultSpot;
-result = result + result2;
+result = result + result2 + resultSpot;
+// result = result + result2;
 fragColor = vec4(result, 1.0);
 }
