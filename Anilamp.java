@@ -13,13 +13,13 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.embed.swing.JFXPanel;
 
-public class M03 extends JFrame implements ActionListener {
+public class Anilamp extends JFrame implements ActionListener {
 
   private static final int WIDTH = 1524;
   private static final int HEIGHT = 600;
   private static final Dimension dimension = new Dimension(WIDTH, HEIGHT);
   private GLCanvas canvas;
-  private M03_GLEventListener glEventListener;
+  private Anilamp_GLEventListener glEventListener;
   private final FPSAnimator animator;
   private Camera camera;
   private Media hit;
@@ -27,18 +27,18 @@ public class M03 extends JFrame implements ActionListener {
   final JFXPanel fxPanel = new JFXPanel();
 
   public static void main(String[] args) {
-    M03 b1 = new M03("M03");
+    Anilamp b1 = new Anilamp("Anilamp");
     b1.getContentPane().setPreferredSize(dimension);
     b1.pack();
     b1.setVisible(true);
   }
 
-  public M03(String textForTitleBar) {
+  public Anilamp(String textForTitleBar) {
     super(textForTitleBar);
     GLCapabilities glcapabilities = new GLCapabilities(GLProfile.get(GLProfile.GL3));
     canvas = new GLCanvas(glcapabilities);
     camera = new Camera(Camera.DEFAULT_POSITION, Camera.DEFAULT_TARGET, Camera.DEFAULT_UP);
-    glEventListener = new M03_GLEventListener(camera);
+    glEventListener = new Anilamp_GLEventListener(camera);
     canvas.addGLEventListener(glEventListener);
     canvas.addMouseMotionListener(new MyMouseInput(camera));
     canvas.addKeyListener(new MyKeyboardInput(camera));
@@ -72,6 +72,12 @@ public class M03 extends JFrame implements ActionListener {
       b = new JButton("Right Light On");
       b.addActionListener(this);
       p.add(b);
+      b = new JButton("Spotlight Off");
+      b.addActionListener(this);
+      p.add(b);
+      b = new JButton("Spotlight On");
+      b.addActionListener(this);
+      p.add(b);
       b = new JButton("Random Pose");
       b.addActionListener(this);
       p.add(b);
@@ -81,7 +87,7 @@ public class M03 extends JFrame implements ActionListener {
       b = new JButton("Jump");
       b.addActionListener(this);
       p.add(b);
-      b = new JButton("Turn 180");
+      b = new JButton("Turn 100 degrees");
       b.addActionListener(this);
       p.add(b);
       b = new JButton("Original Position");
@@ -106,6 +112,7 @@ public class M03 extends JFrame implements ActionListener {
     animator = new FPSAnimator(canvas, 60);
     animator.start();
   }
+
 
   public void playSound(String soundName) {
     hit = new Media(new File(soundName).toURI().toString());
@@ -134,6 +141,12 @@ public class M03 extends JFrame implements ActionListener {
     else if (e.getActionCommand().equalsIgnoreCase("Right Light On")) {
       glEventListener.light1On();
     }
+    else if (e.getActionCommand().equalsIgnoreCase("Spotlight Off")) {
+      glEventListener.spotLightOff();
+    }
+    else if (e.getActionCommand().equalsIgnoreCase("Spotlight On")) {
+      glEventListener.spotLightOn();
+    }
     else if (e.getActionCommand().equalsIgnoreCase("Random Pose")) {
       glEventListener.buttonTime();
       glEventListener.randomPose();
@@ -146,8 +159,9 @@ public class M03 extends JFrame implements ActionListener {
       glEventListener.buttonTime();
       glEventListener.jump();
     }
-    else if (e.getActionCommand().equalsIgnoreCase("Turn 180")) {
-      glEventListener.turn180();
+    else if (e.getActionCommand().equalsIgnoreCase("Turn 100 degrees")) {
+      glEventListener.buttonTime();
+      glEventListener.turn100();
     }
     else if (e.getActionCommand().equalsIgnoreCase("Original Position")) {
       glEventListener.originalPosition();

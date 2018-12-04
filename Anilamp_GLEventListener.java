@@ -7,11 +7,11 @@ import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
 
-public class M03_GLEventListener implements GLEventListener {
+public class Anilamp_GLEventListener implements GLEventListener {
 
   private static final boolean DISPLAY_SHADERS = false;
 
-  public M03_GLEventListener(Camera camera) {
+  public Anilamp_GLEventListener(Camera camera) {
     this.camera = camera;
     this.camera.setPosition(new Vec3(0f,17f,18f));
     this.camera.setTarget(new Vec3(0f,6f,-10f));
@@ -67,34 +67,39 @@ public class M03_GLEventListener implements GLEventListener {
    *
    */
 
+   /* Turns Right light off by adjusting fragment shader */
    public void light1Off() {
      light.setBrightness(0.0f);
    }
 
+   /* Turns Right light on */
    public void light1On() {
      light.setBrightness(0.5f);
    }
 
+   /* Turns Left light off */
    public void light2Off() {
      light2.setBrightness(0.0f);
    }
 
+   /* Turns Left light on */
    public void light2On() {
      light2.setBrightness(0.5f);
    }
 
+   /* Turns spotlight off */
    public void spotLightOff() {
      spotLight.setBrightness(0.0f);
      lampRoot.update();
    }
 
+   /* Turns spotlight on */
    public void spotLightOn() {
      spotLight.setBrightness(2f);
      lampRoot.update();
    }
 
-
-
+   /* Sets random angles for random lamp pose */
    public void randomPose() {
      rotateAllAngleNew = rng(-30,55);
      rotateSphereBodyAngleNew = rng(-30,20);
@@ -105,6 +110,7 @@ public class M03_GLEventListener implements GLEventListener {
      lampRoot.update();
    }
 
+   /* Sets angles for lamp's original pose */
    public void originPose() {
      rotateAllAngleNew  = 35;
      rotateSphereBodyAngleNew = -30;
@@ -115,25 +121,24 @@ public class M03_GLEventListener implements GLEventListener {
      lampRoot.update();
    }
 
+   /* Sets angles for lamp's jumping pose */
    public void jumpingPose() {
      rotateAllAngleNew = 10;
      rotateSphereBodyAngleNew = -10;
      rotateUpperBranchAngleNew = -10;
-     rotateHeadAngleNew = -30; // 50
+     rotateHeadAngleNew = -30;
      pose = true;
      move = false;
      lampRoot.update();
    }
 
-   public void buttonTime() {
-     buttonTime = getSeconds();
-   }
-
+   /* Random number generator */
    public int rng(int min, int max) {
      int x = Math.round((float)(Math.random()*((max-min)+1))+min);
      return x;
    }
 
+   /* Calculates the next x and z position to jump to */
    public void jump() {
      int rngAngleX = rng((int)rotateFootAngleNew-45, (int)rotateFootAngleNew+45);
      int rngAngleZ = (rngAngleX - 90)*-1;
@@ -144,9 +149,11 @@ public class M03_GLEventListener implements GLEventListener {
      double angleCosZ = Math.cos(rngAngleZRad);
 
      double length = 1.0;
+     // Vector equation calculates next position from origin 0
      lampTransXNew = (float)((angleCosX/length)*(Math.pow(length,2)));
      lampTransZNew = (float)((angleCosZ/length)*(Math.pow(length,2)));
 
+     // Adding to existing positions
      lampTransXNew += lampTransX;
      lampTransZNew = lampTransZ + (lampTransZNew*-1);
 
@@ -163,6 +170,7 @@ public class M03_GLEventListener implements GLEventListener {
      lampRoot.update();
    }
 
+   /* Sets translation and rotation values for lamp's original position */
    public void originalPosition() {
      lampTransX = 0.5f;
      lampTransY = 5.5f;
@@ -174,17 +182,19 @@ public class M03_GLEventListener implements GLEventListener {
      lampRoot.update();
    }
 
-   public void turn180() {
-     rotateFootAngleNew = rotateFootAngle - 180;
+   /* Turn 100 degrees to the right */
+   public void turn100() {
+     rotateFootAngleNew = rotateFootAngle - 100;
      lampRoot.update();
    }
 
 
   // ***************************************************
   /* THE SCENE
-   * Now define all the methods to handle the scene.
-   * This will be added to in later examples.
+   *
+   *
    */
+
   private Boolean pose = false;
   private Boolean move = false;
   private Boolean jumpV = false;
@@ -210,17 +220,15 @@ public class M03_GLEventListener implements GLEventListener {
   private float rotateUpperAngleStart = -40, rotateUpperBranchAngle = rotateUpperAngleStart;
   private float rotateHeadAngleStart = 10, rotateHeadAngle = rotateHeadAngleStart;
   private float rotateAllAngleNew, rotateSphereBodyAngleNew, rotateUpperBranchAngleNew, rotateHeadAngleNew;
+  private float rotateFootAngleNew = rotateFootAngleStart;
 
   private float lampTransX = 0.5f;
   private float lampTransY = 5.5f;
   private float lampTransZ = -12.5f;
-
   private float lampTransXNew, lampTransYNew, lampTransZNew;
 
-  private float rotateFootAngleNew = rotateFootAngleStart;
 
-
-
+  /* Contains all scene graph initialisations and model creations */
   private void initialise(GL3 gl) {
     createRandomNumbers();
     int[] textureId0 = TextureLibrary.loadTexture(gl, "textures/carpet.jpg");
@@ -238,9 +246,8 @@ public class M03_GLEventListener implements GLEventListener {
     int[] textureId12 = TextureLibrary.loadTexture(gl, "textures/dj_booth.jpg");
     int[] textureId13 = TextureLibrary.loadTexture(gl, "textures/wall.jpg");
     int[] textureId14 = TextureLibrary.loadTexture(gl, "textures/cloudy2.jpg");
-    // Constant Variables
 
-    // Lamp
+    // Lamp variables
     float lampScale = 0.3f;
 
     float footLength = 5f * lampScale;
@@ -282,27 +289,27 @@ public class M03_GLEventListener implements GLEventListener {
     float danceFloorScale = 0.3f;
 
 
-
-    light = new Light(gl);
+    // Initialising lights
+    light = new Light(gl); // Right
     light.setCamera(camera);
 
-    light2 = new Light(gl);
+    light2 = new Light(gl); // Left
     light2.setCamera(camera);
 
     spotCamera = new Camera(Camera.DEFAULT_POSITION, Camera.DEFAULT_TARGET, Camera.DEFAULT_UP);
     spotLight = new Light(gl);
-    spotLight.setCamera(spotCamera);
+    spotLight.setCamera(spotCamera); // Use spotCamera to get camera front
 
 
-
+    // Model creation
+      // floor
     Mesh mesh = new Mesh(gl, TwoTriangles.vertices.clone(), TwoTriangles.indices.clone());
     Shader shader = new Shader(gl, "vs_tt_05.txt", "fs_tt_uncoloured.txt");
     Material material = new Material(new Vec3(0.0f, 0.5f, 0.81f), new Vec3(0.0f, 0.5f, 0.81f), new Vec3(0.3f, 0.3f, 0.3f), 32.0f);
     Mat4 modelMatrix = Mat4Transform.scale(40f,1f,40f);
     floor = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId0);
 
-
-
+      // spheres
     mesh = new Mesh(gl, Sphere.vertices.clone(), Sphere.indices.clone());
     shader = new Shader(gl, "vs_cube_04.txt", "fs_cube_04.txt");
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
@@ -310,10 +317,10 @@ public class M03_GLEventListener implements GLEventListener {
     sphere = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId3, textureId3);
     sphereLong = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId2, textureId3);
 
-    material = new Material(new Vec3(0.1f, 0.1f, 0.1f), new Vec3(0.1f, 0.1f, 0.1f), new Vec3(0.1f, 0.1f, 0.1f), 100.0f);
+    material = new Material(new Vec3(0.1f, 0.1f, 0.1f), new Vec3(0.1f, 0.1f, 0.1f), new Vec3(0.0f, 0.0f, 0.0f), 100.0f);
     sphereAfro = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId6);
 
-
+      // cubes
     mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
     material = new Material(new Vec3(1.0f, 0.5f, 0.31f), new Vec3(1.0f, 0.5f, 0.31f), new Vec3(0.5f, 0.5f, 0.5f), 32.0f);
     modelMatrix = Mat4.multiply(Mat4Transform.scale(4,4,4), Mat4Transform.translate(0,0.5f,0));
@@ -338,6 +345,7 @@ public class M03_GLEventListener implements GLEventListener {
     mesh = new Mesh(gl, CubeBooth.vertices.clone(), CubeBooth.indices.clone());
     cubeDjBooth = new Model(gl, camera, light, light2, spotLight, shader, material, modelMatrix, mesh, textureId12);
 
+      // dance floor
     mesh = new Mesh(gl, Cube.vertices.clone(), Cube.indices.clone());
     Mat4 m = Mat4Transform.scale(danceFloorScale*30f,danceFloorScale*0.5f,danceFloorScale*30f);
     modelMatrix = Mat4.multiply(Mat4Transform.translate(0,5.5f,-12.5f), m);
@@ -351,7 +359,8 @@ public class M03_GLEventListener implements GLEventListener {
     // LAMP ROOT //
     // LAMP ROOT //
     lampRoot = new NameNode("lamp structure");
-    translateLamp = new TransformNode("translate(0,0,0)", Mat4Transform.translate(lampTransX,lampTransY,lampTransZ));
+    m = Mat4Transform.translate(lampTransX,lampTransY,lampTransZ);
+    translateLamp = new TransformNode("translate(" + lampTransX + "," + lampTransY + "," + lampTransZ + ")", m);
     rotateFoot = new TransformNode("rotateAroundY("+rotateFootAngle+")", Mat4Transform.rotateAroundY(rotateFootAngle));
 
     // FOOT //
@@ -360,110 +369,113 @@ public class M03_GLEventListener implements GLEventListener {
     NameNode lampFoot = new NameNode("lamp foot");
     m = Mat4Transform.scale(footLength,footHeight,footDepth);
     m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-    TransformNode lampFootTransform = new TransformNode("scale(3,1.4,1.4);translate(0,0.5,0)", m);
+    TransformNode lampFootTransform = new TransformNode("scale(" + footLength + "," + footHeight + "," + footDepth + ");translate(0,0.5,0)", m);
     ModelNode cube0Node = new ModelNode("Cube(foot)", cube);
 
     //  LOWER BRANCH //
     //  LOWER BRANCH //
     //  LOWER BRANCH //
     NameNode lowerBranch = new NameNode("lower branch");
-    TransformNode translateAboveFoot = new TransformNode("translate(0,1,0)",Mat4Transform.translate(lowBTransX,lowBTransY,lowBTransZ));
+    m = Mat4Transform.translate(lowBTransX,lowBTransY,lowBTransZ);
+    TransformNode translateAboveFoot = new TransformNode("translate(" + lowBTransX + "," + lowBTransY + "," + lowBTransZ + ")", m);
     rotateAll = new TransformNode("rotateAroundZ("+rotateAllAngle+")", Mat4Transform.rotateAroundZ(rotateAllAngle));
 
     m = new Mat4(1);
     m = Mat4.multiply(m, Mat4Transform.scale(branchThick,branchLength,branchThick));
     m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-    TransformNode lowerBranchTransform = new TransformNode("scale(1,7,1); translate(0,0.5,0)", m);
-    ModelNode cube1Node = new ModelNode("SpherLong(lower branch)", sphereLong);
+    TransformNode lowerBranchTransform = new TransformNode("scale(" + branchThick + "," + branchLength + "," + branchThick + "); translate(0,0.5,0)", m);
+    ModelNode cube1Node = new ModelNode("SphereLong(lower branch)", sphereLong);
 
     //  SPHERE BODY //
     //  SPHERE BODY //
     //  SPHERE BODY //
-    TransformNode translateAboveLowBranch = new TransformNode("translate(-0.10,7.50,0)",Mat4Transform.translate(sphereTransX,sphereTransY,sphereTransZ));
+    NameNode sphereBody = new NameNode("sphere body");
+    m = Mat4Transform.translate(sphereTransX,sphereTransY,sphereTransZ);
+    TransformNode translateAboveLowBranch = new TransformNode("translate(" + sphereTransX + "," + sphereTransY + "," + sphereTransZ + ")", m);
     rotateSphereBody = new TransformNode("rotateAroundZ("+rotateSphereBodyAngle+")",Mat4Transform.rotateAroundZ(rotateSphereBodyAngle));
 
-    NameNode sphereBody = new NameNode("sphere body");
     m = Mat4Transform.scale(sphereScale,sphereScale,sphereScale);
-    TransformNode sphereBodyTransform = new TransformNode("scale(1.4f,1.4f,1.4f);translate(0,0.5,0)", m);
+    TransformNode sphereBodyTransform = new TransformNode("scale(" + sphereScale + "," + sphereScale + "," + sphereScale + ");translate(0,0.5,0)", m);
     ModelNode cube2Node = new ModelNode("Sphere(sphere body)", sphere);
 
     //  UPPER BRANCH //
     //  UPPER BRANCH //
     //  UPPER BRANCH //
-    TransformNode translateAboveSphereBody = new TransformNode("translate(0.5,0.5,0)",Mat4Transform.translate(upBTransX,upBTransY,upBTransZ));
+    NameNode upperBranch = new NameNode("upper branch");
+    m = Mat4Transform.translate(upBTransX,upBTransY,upBTransZ);
+    TransformNode translateAboveSphereBody = new TransformNode("translate(" + upBTransX + "," + upBTransY + "," + upBTransZ + ")", m);
     rotateUpperBranch = new TransformNode("rotateAroundZ("+rotateUpperBranchAngle+")",Mat4Transform.rotateAroundZ(rotateUpperBranchAngle));
 
-    NameNode upperBranch = new NameNode("upper branch");
     m = Mat4Transform.scale(branchThick,branchLength,branchThick);
     m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-    TransformNode upperBranchTransform = new TransformNode("scale(1,7,1); translate(0,0.5,0)", m);
+    TransformNode upperBranchTransform = new TransformNode("scale(" + branchThick + "," + branchLength + "," + branchThick + "); translate(0,0.5,0)", m);
     ModelNode cube3Node = new ModelNode("SphereLong(upper branch)", sphereLong);
 
     // HEAD //
     // HEAD //
     // HEAD //
-    TransformNode translateAboveUpperBranch = new TransformNode("translate(0.5,7,0)",Mat4Transform.translate(headTransX,headTransY,headTransZ));
+    NameNode lampHead = new NameNode("head");
+    m = Mat4Transform.translate(headTransX,headTransY,headTransZ);
+    TransformNode translateAboveUpperBranch = new TransformNode("translate(" + headTransX + "," + headTransY + "," + headTransZ + ")", m);
     rotateHead = new TransformNode("rotateAroundZ("+rotateHeadAngle+")",Mat4Transform.rotateAroundZ(rotateHeadAngle));
 
-    NameNode lampHead = new NameNode("head");
     m = Mat4Transform.scale(headLength,headHeight,headDepth);
     m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-    TransformNode lampHeadTransform = new TransformNode("scale(4,2.5,2.5);translate(0,0.5,0)", m);
-    ModelNode cube4Node = new ModelNode("Cube2(head)", cubeBeige);
+    TransformNode lampHeadTransform = new TransformNode("scale(" + headLength + "," + headHeight + "," + headDepth + ");translate(0,0.5,0)", m);
+    ModelNode cube4Node = new ModelNode("CubeBeige(head)", cubeBeige);
 
     // AFRO //
     // AFRO //
     // AFRO //
-    TransformNode translateAboveHead = new TransformNode("translate(0.5,7,0)",Mat4Transform.translate(afroTransX,afroTransY,afroTransZ));
-
     NameNode afro = new NameNode("afro");
+    m = Mat4Transform.translate(afroTransX,afroTransY,afroTransZ);
+    TransformNode translateAboveHead = new TransformNode("translate(" + afroTransX + "," + afroTransY + "," + afroTransZ + ")", m);
+
     m = Mat4Transform.scale(afroScale,afroScale,afroScale);
     m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-    TransformNode afroTransform = new TransformNode("scale(5,5,5);translate(0,0.5,0)", m);
-    ModelNode cube5Node = new ModelNode("Sphere2(5)", sphereAfro);
+    TransformNode afroTransform = new TransformNode("scale(" + afroScale + "," + afroScale + "," + afroScale + ");translate(0,0.5,0)", m);
+    ModelNode cube5Node = new ModelNode("SphereAfro(Afro)", sphereAfro);
 
-    // LIGHT //
-    // LIGHT //
-    // LIGHT //
-    TransformNode translateFrontHead = new TransformNode("translate(0.5,7,0)",Mat4Transform.translate(0.5f,0.2f,0));
-
+    // SPOT LIGHT ORIGIN //
+    // SPOT LIGHT ORIGIN //
+    // SPOT LIGHT ORIGIN //
     NameNode lampLight = new NameNode("lamp light");
+    m = Mat4Transform.translate(0.5f,0.2f,0);
+    TransformNode translateFrontHead = new TransformNode("translate(0.5f,0.2f,0)", m);
+
     m = Mat4Transform.scale(0.3f,0.3f,0.5f);
     m = Mat4.multiply(m, Mat4Transform.translate(0,0,0));
-    TransformNode lampLightTransform = new TransformNode("scale(5,5,5);translate(0,0.5,0)", m);
-    LightNode cube6Node = new LightNode("Light(6)", spotLight);
+    TransformNode lampLightTransform = new TransformNode("scale(0.3f,0.3f,0.5f);translate(0,0,0)", m);
+    LightNode cube6Node = new LightNode("SpotLight(Lamp Light)", spotLight);
 
 
-
+    // LIGHT MODEL //
+    // LIGHT MODEL //
+    // LIGHT MODEL //
+    NameNode lampLightMouth = new NameNode("lamp light");
     lightMouth = new Light(gl);
     lightMouth.setCamera(camera);
-    NameNode lampLightMouth = new NameNode("lamp light");
+
     m = Mat4Transform.scale(0.3f,0.3f,0.5f);
     m = Mat4.multiply(m, Mat4Transform.translate(0,0,0));
-    TransformNode lampLightMouthTransform = new TransformNode("scale(5,5,5);translate(0,0.5,0)", m);
-    LightNode cube7Node = new LightNode("Light(6)", lightMouth);
-
-    // CAMERA //
-    // CAMERA //
-    // CAMERA //
-    // NameNode lampCamera = new NameNode("lamp camera");
-    // CameraNode cube7Node = new CameraNode("Light(6)", spotCamera);
+    TransformNode lampLightMouthTransform = new TransformNode("scale(0.3f,0.3f,0.5f);translate(0,0,0)", m);
+    LightNode cube7Node = new LightNode("LightMouth(LampLightMouth)", lightMouth);
 
 
 
 
-
-
-
-    //GLASSES ROOT//
-    //GLASSES ROOT//
-    //GLASSES ROOT//
-    TransformNode translateGlasses = new TransformNode("translate(0.5,7,0)",Mat4Transform.translate(glassesTransX,glassesTransY,glassesTransZ));
-    glasses = new Glasses(sphere, cubeWall);
+    // GLASSES ROOT //
+    // GLASSES ROOT //
+    // GLASSES ROOT //
+    m = Mat4Transform.translate(glassesTransX,glassesTransY,glassesTransZ);
+    TransformNode translateGlasses = new TransformNode("translate(" + glassesTransX + "," + glassesTransY + "," + glassesTransZ + ")", m);
+    glasses = new Glasses(sphere, cubeWall); // Glasses class contains scene graph
     glassesRoot = glasses.glassesInit();
 
 
-    // lampRoot
+    // LAMP ROOT //
+    // LAMP ROOT //
+    // LAMP ROOT //
     lampRoot.addChild(translateLamp);
       translateLamp.addChild(rotateFoot);
         rotateFoot.addChild(lampFoot);
@@ -502,14 +514,9 @@ public class M03_GLEventListener implements GLEventListener {
                                     translateFrontHead.addChild(lampLightMouthTransform);
                                       lampLightMouthTransform.addChild(lampLightMouth);
                                         lampLightMouth.addChild(cube7Node);
-    lampRoot.update();  // IMPORTANT – must be done every time any part of the scene graph changes
+    lampRoot.update();
     // lampRoot.print(0, false);
     // System.exit(0);
-
-
-
-
-
 
 
 
@@ -539,39 +546,21 @@ public class M03_GLEventListener implements GLEventListener {
     disco = new DiscoBall(cubeBlackB, cubeFloor, sphere);
     discoRoot = disco.discoInit();
 
-
-
-
-
-    //table
-    // tableRoot.
   }
 
+  /* Render calls and update calls */
   private void render(GL3 gl) {
     gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
+    // Calculates position and target of the camera in spotlight
     double radA = Math.toRadians(rotateFootAngle);
     float cosA = (float)Math.cos(radA);
     float sinA = (float)Math.sin(radA);
-
-    double rad1 = Math.toRadians(rotateHeadAngle);
-    double rad2 = Math.toRadians(rotateAllAngle);
-    double rad3 = Math.toRadians(rotateSphereBodyAngle);
-    double rad4 = Math.toRadians(rotateUpperBranchAngle);
-    float cos1 = (float)Math.cos(rad1);
-    float cos2 = (float)Math.cos(rad2);
-    float cos3 = (float)Math.cos(rad3);
-    float cos4 = (float)Math.cos(rad4);
-
-    float cosTotal = (cos1 * 5) + (cos2 * 5) + (cos3 * 5) + (cos4 * 5);
-
 
     spotCamera.setPosition(new Vec3(lampTransX+1f - 20*cosA,lampTransY+ 4f,lampTransZ + 20*sinA));
     spotCamera.setTarget(new Vec3(lampTransX+4f,lampTransY, -12.5f));
 
 
-
-    // light.setPosition(getLightPosition());  // changing light position each frame
     light.setPosition(new Vec3(15f,15f,15f));
     light.render(gl);
     light2.setPosition(new Vec3(-15f,15f,15f));
@@ -584,8 +573,9 @@ public class M03_GLEventListener implements GLEventListener {
     boothRoot.draw(gl);
     discoRoot.draw(gl);
     danceFloor.render(gl);
-    updateBranches();
+    updateDiscoRotation();
 
+    // pose, move and jumpV Booleans determine when to call their respective functions
     if (pose) {
       updatePose();
     }
@@ -601,15 +591,16 @@ public class M03_GLEventListener implements GLEventListener {
 
   }
 
-  private void updateBranches() {
+  /* Keeps the disco ball spinning */
+  private void updateDiscoRotation() {
     double elapsedTime = getSeconds()-startTime;
-    float rotateDiscoAngle;
     float rotateDiscoAngleStart = disco.getAngleStart();
-    rotateDiscoAngle = rotateDiscoAngleStart + (float)elapsedTime*50;
+    float rotateDiscoAngle = rotateDiscoAngleStart + (float)elapsedTime*50;
     disco.setRotateTransform(rotateDiscoAngle);
     discoRoot.update();
   }
 
+  /* Rotates the entire lamp to jumping target and prepares for jump through a crouching pose */
   private void updateFootAngle() {
     double elapsedTime = getSeconds()-buttonTime;
     rotateFootAngle = poseCalculation(rotateFootAngle, rotateFootAngleNew, elapsedTime);
@@ -623,6 +614,7 @@ public class M03_GLEventListener implements GLEventListener {
     rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
     rotateFoot.setTransform(Mat4Transform.rotateAroundY(rotateFootAngle));
 
+    // If target angle reached
     if (rotateFootAngle == rotateFootAngleNew) {
       move = false;
       jumpV = true;
@@ -631,17 +623,15 @@ public class M03_GLEventListener implements GLEventListener {
     lampRoot.update();
   }
 
+  /* Controls the vertical translation of the lamp using a sine wave. Also determines lamp pose in midair and when landing */
   private void jumpVertical() {
     double elapsedTime = getSeconds()- jumpTime;
 
     if (lampTransY >= 5.5f) {
       jumpingPose();
-      // spotLightOff();
       lampTransY = lampTransY + (lampTransY*(float)Math.sin(elapsedTime*10f))/50;
-      System.out.println(lampTransY);
       if (lampTransY < 5.5f) {
         lampTransY = 5.49f;
-        // spotLightOn();
         originPose();
         buttonTime = getSeconds() - 0.5;
         jumpV = false;
@@ -651,10 +641,11 @@ public class M03_GLEventListener implements GLEventListener {
     lampRoot.update();
   }
 
+  /* Controls the horizontal translation of the lamp using elapsed time. Also keeps the lamp within boundaries */
   private void jumpHorizontal() {
     double elapsedTime = getSeconds()- jumpTime;
     double speed = 0.15;
-    if (lampTransX > (lampTransXNew - 0.2) && lampTransX < (lampTransXNew + 0.2)) {
+    if (lampTransX > (lampTransXNew - 0.2) && lampTransX < (lampTransXNew + 0.2)) { // allowing room for error
       lampTransX = lampTransXNew;
     }
     else if (lampTransX < lampTransXNew) {
@@ -677,25 +668,26 @@ public class M03_GLEventListener implements GLEventListener {
     // Invisible walls
     if (lampTransX > 7) {
       lampTransX = 7;
-      turn180();
+      turn100(); // turns the lamp once it reaches boundary
     }
     if (lampTransX < -8 ) {
       lampTransX = -8;
-      turn180();
+      turn100();
     }
     if (lampTransZ > -6) {
       lampTransZ = -6;
-      turn180();
+      turn100();
     }
     if (lampTransZ < -18) {
       lampTransZ = -18;
-      turn180();
+      turn100();
     }
 
     translateLamp.setTransform(Mat4Transform.translate(lampTransX,lampTransY,lampTransZ));
     lampRoot.update();
   }
 
+  /* Controls the pose by giving it a smooth transition from the original angles to the new angles */
   private void updatePose() {
 
     double elapsedTime = getSeconds()-buttonTime;
@@ -711,9 +703,10 @@ public class M03_GLEventListener implements GLEventListener {
     rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
     rotateFoot.setTransform(Mat4Transform.rotateAroundY(rotateFootAngle));
 
-    lampRoot.update(); // IMPORTANT – the scene graph has changed
+    lampRoot.update();
   }
 
+  /* Makes sure that the angle changes in the above update functions change over time (smoothly) */
   private float poseCalculation(float startAngle, float newAngle, double time) {
     if (startAngle <= newAngle-3) {
       startAngle = startAngle + (float)(time*6);
@@ -721,20 +714,12 @@ public class M03_GLEventListener implements GLEventListener {
     else if (startAngle >= newAngle+3) {
       startAngle = startAngle - (float)(time*6);
     }
-    else if (startAngle >= (newAngle-3) && startAngle <= (newAngle+3)) {
+    else if (startAngle >= (newAngle-3) && startAngle <= (newAngle+3)) { // allowing room for error
       startAngle = newAngle;
     }
     return startAngle;
   }
 
-  // The light's postion is continually being changed, so needs to be calculated for each frame.
-  private Vec3 getLightPosition() {
-    double elapsedTime = getSeconds()-startTime;
-    float x = 5.0f*(float)(Math.sin(Math.toRadians(elapsedTime*50)));
-    float y = 2.7f;
-    float z = 5.0f*(float)(Math.cos(Math.toRadians(elapsedTime*50)));
-    return new Vec3(x,y,z);
-  }
 
   // ***************************************************
   /* TIME
@@ -744,8 +729,14 @@ public class M03_GLEventListener implements GLEventListener {
   private double buttonTime;
   private double jumpTime;
 
+  /* Returns system time in milliseconds */
   private double getSeconds() {
     return System.currentTimeMillis()/1000.0;
+  }
+
+  /* Returns system time at the time a button is pressed, if that button calls this function */
+  public void buttonTime() {
+    buttonTime = getSeconds();
   }
 
   // ***************************************************
