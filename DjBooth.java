@@ -21,9 +21,10 @@ public class DjBooth {
     this.model2 = model2;
   }
 
+  /* Returns boothRoot once the nodes and scene graph have been set up */
   public SGNode djBoothInit() {
     boothRoot = new NameNode("booth structure");
-    translateBooth = new TransformNode("translate(0,0,0)", Mat4Transform.translate(10f,5.5f,-12.5f));
+    translateBooth = new TransformNode("translate(10f,5.5f,-12.5f)", Mat4Transform.translate(10f,5.5f,-12.5f));
     rotateBooth = new TransformNode("rotateAroundY(90)", Mat4Transform.rotateAroundY(90f));
 
     // DJ //
@@ -32,8 +33,9 @@ public class DjBooth {
     NameNode dj = new NameNode("dj");
     Mat4 m = Mat4Transform.scale(boothScale*9f,boothScale*3f,boothScale*4f);
     m = Mat4.multiply(Mat4Transform.translate(0f,boothScale*1.5f,0f), m);
-    TransformNode djTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube0Booth = new ModelNode("Cube(dj)", model);
+    TransformNode djTransform = new TransformNode("scale(" + boothScale*9f + "," + boothScale*3f + "," + boothScale*4f + ")" +
+                                                         ";translate(0," + boothScale*1.5f + ", 0)", m);
+    ModelNode cube0Booth = new ModelNode("cubeDjBooth(dj)", model);
 
     // LEFT SPEAKER //
     // LEFT SPEAKER //
@@ -41,8 +43,9 @@ public class DjBooth {
     NameNode leftSpeaker = new NameNode("leftSpeaker");
     m = Mat4Transform.scale(boothScale*3f,boothScale*7f,boothScale*4f);
     m = Mat4.multiply(Mat4Transform.translate(boothScale*-6f,boothScale*3.5f,0f), m);
-    TransformNode leftSpeakerTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube1Booth = new ModelNode("Cube(left speaker)", model2);
+    TransformNode leftSpeakerTransform = new TransformNode("scale(" + boothScale*3f + "," + boothScale*7f + "," + boothScale*7f + ")" +
+                                                         ";translate(" + boothScale*-6f + "," + boothScale*3.5f + ", 0)", m);
+    ModelNode cube1Booth = new ModelNode("cubeTS(left speaker)", model2);
 
     // RIGHT SPEAKER //
     // RIGHT SPEAKER //
@@ -50,8 +53,9 @@ public class DjBooth {
     NameNode rightSpeaker = new NameNode("rightSpeaker");
     m = Mat4Transform.scale(boothScale*3f,boothScale*7f,boothScale*4f);
     m = Mat4.multiply(Mat4Transform.translate(boothScale*6f,boothScale*3.5f,0f), m);
-    TransformNode rightSpeakerTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube2Booth = new ModelNode("Cube(right speaker)", model2);
+    TransformNode rightSpeakerTransform = new TransformNode("scale(" + boothScale*3f + "," + boothScale*7f + "," + boothScale*4f + ")" +
+                                                         ";translate(" + boothScale*6f + "," + boothScale*3.5f + ", 0)", m);
+    ModelNode cube2Booth = new ModelNode("cubeTS(right speaker)", model2);
 
     boothRoot.addChild(translateBooth);
       translateBooth.addChild(rotateBooth);

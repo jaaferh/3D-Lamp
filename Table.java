@@ -22,21 +22,21 @@ public class Table {
     this.model2 = model2;
   }
 
-
-
+  /* Returns tableRoot once the nodes and scene graph have been set up */
   public SGNode tableInit() {
 
     tableRoot = new NameNode("table structure");
-    translateTable = new TransformNode("translate(0,0,0)", Mat4Transform.translate(0,0,(-0.5f*floorSize) + (tableDepth*0.5f)));
+    Mat4 m = Mat4Transform.translate(0,0,(-0.5f*floorSize) + (tableDepth*0.5f));
+    translateTable = new TransformNode("translate(0,0,"+ (-0.5f*floorSize) + (tableDepth*0.5f) +")", m);
 
     // TABLE BODY //
     // TABLE BODY //
     // TABLE BODY //
     NameNode tableBody = new NameNode("tableBody");
-    Mat4 m = Mat4Transform.scale(tableLength,1,tableDepth);
+    m = Mat4Transform.scale(tableLength,1,tableDepth);
     m = Mat4.multiply(Mat4Transform.translate(0,5f,0), m);
-    TransformNode tableBodyTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
-    ModelNode cube0NodeT = new ModelNode("Cube(table body)", model);
+    TransformNode tableBodyTransform = new TransformNode("scale(" + tableLength + ",1," + tableDepth + ");translate(0,5,0)", m);
+    ModelNode cube0NodeT = new ModelNode("cubeWood(table body)", model);
 
     // TABLE LEG BACK LEFT //
     // TABLE LEG BACK LEFT //
@@ -44,8 +44,8 @@ public class Table {
     NameNode tableLegBL = new NameNode("tableLegBL");
     m = Mat4Transform.scale(1f,5f,1f);
     m = Mat4.multiply(Mat4Transform.translate((0.5f*-tableLength)+0.5f,2.0f,(0.5f*-tableDepth)+0.5f), m);
-    TransformNode tableLegBLTransform = new TransformNode("translate(-6.5,2.5,-9.5);scale(1,5,1)", m);
-    ModelNode cube1NodeT = new ModelNode("Cube(table leg back left)", model2);
+    TransformNode tableLegBLTransform = new TransformNode("scale(1,5,1);translate(" + (0.5f*-tableLength)+0.5f + ",2," + (0.5f*-tableDepth)+0.5f + ")", m);
+    ModelNode cube1NodeT = new ModelNode("cubeWoodLegs(table leg back left)", model2);
 
     // TABLE LEG BACK RIGHT //
     // TABLE LEG BACK RIGHT //
@@ -53,8 +53,8 @@ public class Table {
     NameNode tableLegBR = new NameNode("tableLegBR");
     m = Mat4Transform.scale(1f,5f,1f);
     m = Mat4.multiply(Mat4Transform.translate((0.5f*tableLength)-0.5f,2.0f,(0.5f*-tableDepth)+0.5f), m);
-    TransformNode tableLegBRTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube2NodeT = new ModelNode("Cube(table leg back right)", model2);
+    TransformNode tableLegBRTransform = new TransformNode("scale(1,5,1);translate(" + ((0.5f*tableLength)-0.5f) + ",2," + (0.5f*-tableDepth)+0.5f + ")", m);
+    ModelNode cube2NodeT = new ModelNode("cubeWoodLegs(table leg back right)", model2);
 
     // TABLE LEG FRONT RIGHT //
     // TABLE LEG FRONT RIGHT //
@@ -62,8 +62,8 @@ public class Table {
     NameNode tableLegFR = new NameNode("tableLegFR");
     m = Mat4Transform.scale(1f,5f,1f);
     m = Mat4.multiply(Mat4Transform.translate((0.5f*tableLength)-0.5f,2.0f,(0.5f*tableDepth)-0.5f), m);
-    TransformNode tableLegFRTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube3NodeT = new ModelNode("Cube(table leg front right)", model2);
+    TransformNode tableLegFRTransform = new TransformNode("scale(1,5,1);translate(" + ((0.5f*tableLength)-0.5f) + ",2," + ((0.5f*tableDepth)-0.5f) + ")", m);
+    ModelNode cube3NodeT = new ModelNode("cubeWoodLegs(table leg front right)", model2);
 
     // TABLE LEG FRONT LEFT //
     // TABLE LEG FRONT LEFT //
@@ -71,8 +71,8 @@ public class Table {
     NameNode tableLegFL = new NameNode("tableLegFL");
     m = Mat4Transform.scale(1f,5f,1f);
     m = Mat4.multiply(Mat4Transform.translate((0.5f*-tableLength)+0.5f,2.0f,(0.5f*tableDepth)-0.5f), m);
-    TransformNode tableLegFLTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube4NodeT = new ModelNode("Cube(table leg front left)", model2);
+    TransformNode tableLegFLTransform = new TransformNode("scale(1,5,1);translate(" + (0.5f*-tableLength)+0.5f + ",2," + ((0.5f*tableDepth)-0.5f) + ")", m);
+    ModelNode cube4NodeT = new ModelNode("cubeWoodLegs(table leg front left)", model2);
 
 
     tableRoot.addChild(translateTable);

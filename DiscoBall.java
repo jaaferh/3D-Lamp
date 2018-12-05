@@ -40,10 +40,10 @@ public class DiscoBall {
     rotateDisco.setTransform(Mat4Transform.rotateAroundY(a));
   }
 
-
+  /* Returns discoRoot once the nodes and scene graph have been set up*/
   public SGNode discoInit() {
     discoRoot = new NameNode("disco structure");
-    translateDisco = new TransformNode("translate(0,0,0)", Mat4Transform.translate(-9f,5.5f,-14.5f));
+    translateDisco = new TransformNode("translate(-9f,5.5f,-14.5f)", Mat4Transform.translate(-9f,5.5f,-14.5f));
 
     // DISCO BASE //
     // DISCO BASE //
@@ -51,8 +51,9 @@ public class DiscoBall {
     NameNode discoBase = new NameNode("discoBase");
     Mat4 m = Mat4Transform.scale(discoScale*6f,discoScale*1f,discoScale*3f);
     m = Mat4.multiply(Mat4Transform.translate(0f,discoScale*0.5f,0f), m);
-    TransformNode discoBaseTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube0Disco = new ModelNode("Cube(discoBase)", model);
+    TransformNode discoBaseTransform = new TransformNode("scale(" + discoScale*6f + "," + discoScale*1f + "," + discoScale*3f + ")" +
+                                                         ";translate(0," + discoScale*0.5f + ", 0)", m);
+    ModelNode cube0Disco = new ModelNode("cubeBlackB(discoBase)", model);
 
     // DISCO STAND VERTICAL //
     // DISCO STAND VERTICAL //
@@ -60,8 +61,9 @@ public class DiscoBall {
     NameNode discoStandV = new NameNode("discoStandV");
     m = Mat4Transform.scale(discoScale*0.1f,discoScale*16f,discoScale*0.1f);
     m = Mat4.multiply(Mat4Transform.translate(0f,discoScale*8.5f,0f), m);
-    TransformNode discoStandVTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube1Disco = new ModelNode("Cube(discoStandV)", model2);
+    TransformNode discoStandVTransform = new TransformNode("scale(" + discoScale*0.1f + "," + discoScale*16f + "," + discoScale*0.1f + ")" +
+                                                         ";translate(0," + discoScale*8.5f + ", 0)", m);
+    ModelNode cube1Disco = new ModelNode("cubeFloor(discoStandV)", model2);
 
     // DISCO STAND HORIZONTAL //
     // DISCO STAND HORIZONTAL //
@@ -69,8 +71,9 @@ public class DiscoBall {
     NameNode discoStandH = new NameNode("discoStandH");
     m = Mat4Transform.scale(discoScale*5f,discoScale*0.1f,discoScale*0.1f);
     m = Mat4.multiply(Mat4Transform.translate(discoScale*2.5f,discoScale*16.5f,0f), m);
-    TransformNode discoStandHTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube2Disco = new ModelNode("Cube(discoStandH)", model2);
+    TransformNode discoStandHTransform = new TransformNode("scale(" + discoScale*5f + "," + discoScale*0.1f + "," + discoScale*0.1f + ")" +
+                                                         ";translate(" + discoScale*2.5f + "," + discoScale*16.5f + ", 0f)", m);
+    ModelNode cube2Disco = new ModelNode("cubeFloor(discoStandH)", model2);
 
     // DISCO STRING //
     // DISCO STRING //
@@ -78,20 +81,22 @@ public class DiscoBall {
     NameNode discoString = new NameNode("discoString");
     m = Mat4Transform.scale(discoScale*0.1f,discoScale*1f,discoScale*0.1f);
     m = Mat4.multiply(Mat4Transform.translate(discoScale*5f,discoScale*16f,0f), m);
-    TransformNode discoStringTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube3Disco = new ModelNode("Cube(discoString)", model2);
+    TransformNode discoStringTransform = new TransformNode("scale(" + discoScale*0.1f + "," + discoScale*1f + "," + discoScale*0.1f + ")" +
+                                                         ";translate(" + discoScale*5f + "," + discoScale*16f + ", 0)", m);
+    ModelNode cube3Disco = new ModelNode("cubeFloor(discoString)", model2);
 
     // DISCO BALL //
     // DISCO BALL //
     // DISCO BALL //
-    TransformNode translateBelowString = new TransformNode("translate(-0.10,7.50,0)",Mat4Transform.translate(discoScale*5f,discoScale*13.5f,0f));
+    NameNode discoBall = new NameNode("discoBall");
+    m = Mat4Transform.translate(discoScale*5f,discoScale*13.5f,0f);
+    TransformNode translateBelowString = new TransformNode("translate(" + discoScale*5f + "," + discoScale*13.5f + ", 0)", m);
 
     rotateDisco = new TransformNode("rotateAroundY("+rotateDiscoAngle+")",Mat4Transform.rotateAroundY(rotateDiscoAngle));
-    NameNode discoBall = new NameNode("discoBall");
     m = Mat4Transform.scale(discoScale*4f,discoScale*4f,discoScale*4f);
     m = Mat4.multiply(Mat4Transform.translate(0f,0f,0f), m);
-    TransformNode discoBallTransform = new TransformNode("scale(10,10,10);translate(0,0,5)", m);
-    ModelNode cube4Disco = new ModelNode("Cube(discoBall)", model3);
+    TransformNode discoBallTransform = new TransformNode("scale(" + discoScale*4f + "," + discoScale*4f + "," + discoScale*4f + ");translate(0,0,0)", m);
+    ModelNode cube4Disco = new ModelNode("sphere(discoBall)", model3);
 
     discoRoot.addChild(translateDisco);
       translateDisco.addChild(discoBase);

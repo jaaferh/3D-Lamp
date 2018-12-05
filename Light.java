@@ -1,3 +1,6 @@
+/* This class has been used from Dr Steve Maddock's tutorials */
+/* Some functions may have been added or adjusted */
+
 import gmaths.*;
 import java.nio.*;
 import com.jogamp.common.nio.*;
@@ -77,6 +80,7 @@ public class Light {
     return camera;
   }
 
+  /* Brightness is multiplied by the light result in the fs shader */
   public void setBrightness(float b) {
     brightness = b;
   }

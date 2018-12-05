@@ -1,3 +1,6 @@
+/* This class has been used from Dr Steve Maddock's tutorials */
+/* Some functions may have been added or adjusted */
+
 import java.io.File;
 import java.io.FileInputStream;
 import com.jogamp.opengl.*;

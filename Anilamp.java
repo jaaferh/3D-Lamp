@@ -1,3 +1,9 @@
+/* Jaafer Hussain */
+/* I declare that this code is my own work */
+/* Some code has been taken from Dr Steve Maddock's tutorials, */
+/* all other code has been written by me */
+/* Author jhussain2@sheffield.ac.uk */
+
 import gmaths.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -15,8 +21,8 @@ import javafx.embed.swing.JFXPanel;
 
 public class Anilamp extends JFrame implements ActionListener {
 
-  private static final int WIDTH = 1524;
-  private static final int HEIGHT = 600;
+  private static final int WIDTH = 1980;
+  private static final int HEIGHT = 900;
   private static final Dimension dimension = new Dimension(WIDTH, HEIGHT);
   private GLCanvas canvas;
   private Anilamp_GLEventListener glEventListener;
@@ -93,7 +99,7 @@ public class Anilamp extends JFrame implements ActionListener {
       b = new JButton("Original Position");
       b.addActionListener(this);
       p.add(b);
-      b = new JButton("Disco Time!");
+      b = new JButton("Disco Time! (Sound included)");
       b.addActionListener(this);
       p.add(b);
       b = new JButton("Kill the Beat");
@@ -166,7 +172,9 @@ public class Anilamp extends JFrame implements ActionListener {
     else if (e.getActionCommand().equalsIgnoreCase("Original Position")) {
       glEventListener.originalPosition();
     }
-    else if (e.getActionCommand().equalsIgnoreCase("Disco Time!")) {
+    else if (e.getActionCommand().equalsIgnoreCase("Disco Time! (Sound included)")) {
+      glEventListener.buttonTime();
+      glEventListener.dance();
       switch(glEventListener.rng(1,5)) {
         case 1 :
           playSound("audio\\flying_to_space.mp3");
@@ -186,7 +194,9 @@ public class Anilamp extends JFrame implements ActionListener {
       }
     }
     else if (e.getActionCommand().equalsIgnoreCase("Kill the Beat")) {
+      glEventListener.buttonTime();
       mediaPlayer.stop();
+      glEventListener.stopDancing();
     }
     else if(e.getActionCommand().equalsIgnoreCase("quit"))
       System.exit(0);

@@ -23,6 +23,7 @@ public class Glasses {
     this.model2 = model2;
   }
 
+  /* Returns glassesRoot once the nodes and scene graph have been set up*/
   public SGNode glassesInit() {
     glassesRoot = new NameNode("Glasses structure");
 
@@ -31,9 +32,10 @@ public class Glasses {
     //LEFT LENS//
     NameNode leftLens = new NameNode("leftLens");
     Mat4 m = Mat4Transform.scale(glassesScale*0.25f,glassesScale*3,glassesScale*3);
-    m = Mat4.multiply(Mat4Transform.translate(0,0f,glassesScale*1.5f), m);
-    TransformNode leftLensTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
-    ModelNode sphere0NodeG = new ModelNode("Spere(table body)", model);
+    m = Mat4.multiply(Mat4Transform.translate(0f,0f,glassesScale*1.5f), m);
+    TransformNode leftLensTransform = new TransformNode("scale(" + glassesScale*0.25f + "," + glassesScale*3 + "," + glassesScale*3 + ")" +
+                                                         ";translate(0,0," + glassesScale*1.5f + ")", m);
+    ModelNode sphere0NodeG = new ModelNode("Sphere(table body)", model);
 
     //RIGHT LENS//
     //RIGHT LENS//
@@ -41,7 +43,8 @@ public class Glasses {
     NameNode rightLens = new NameNode("rightLens");
     m = Mat4Transform.scale(glassesScale*0.25f,glassesScale*3,glassesScale*3);
     m = Mat4.multiply(Mat4Transform.translate(0,0f,glassesScale*-1.5f), m);
-    TransformNode rightLensTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
+    TransformNode rightLensTransform = new TransformNode("scale(" + glassesScale*0.25f + "," + glassesScale*3 + "," + glassesScale*3 + ")" +
+                                                         ";translate(0,0," + glassesScale*-1.5f + ")", m);
     ModelNode sphere1NodeG = new ModelNode("Sphere(table body)", model);
 
     //MIDDLE BRIDGE//
@@ -49,9 +52,10 @@ public class Glasses {
     //MIDDLE BRIDGE//
     NameNode middleBridge = new NameNode("middleBridge");
     m = Mat4Transform.scale(glassesScale*0.25f,glassesScale*0.5f,glassesScale*0.5f);
-    m = Mat4.multiply(Mat4Transform.translate(0,0f,0), m);
-    TransformNode middleBridgeTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
-    ModelNode cube3NodeG = new ModelNode("Cube(table body)", model2);
+    m = Mat4.multiply(Mat4Transform.translate(0,0,0), m);
+    TransformNode middleBridgeTransform = new TransformNode("scale(" + glassesScale*0.25f + "," + glassesScale*0.5f + "," + glassesScale*0.5f + ")" +
+                                                         ";translate(0,0,0)", m);
+    ModelNode cube3NodeG = new ModelNode("CubeWall(table body)", model2);
 
     //LEFT ARM//
     //LEFT ARM//
@@ -59,8 +63,9 @@ public class Glasses {
     NameNode leftArm = new NameNode("leftArm");
     m = Mat4Transform.scale(glassesScale*3f,glassesScale*0.5f,glassesScale*0.25f);
     m = Mat4.multiply(Mat4Transform.translate(glassesScale*-1.5f,0f,glassesScale*2.75f), m);
-    TransformNode leftArmTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
-    ModelNode cube5NodeG = new ModelNode("Cube(table body)", model2);
+    TransformNode leftArmTransform = new TransformNode("scale(" + glassesScale*3f + "," + glassesScale*0.5f + "," + glassesScale*0.25f + ")" +
+                                                         ";translate(" + glassesScale*-1.5f + ",0," + glassesScale*2.75f + ")", m);
+    ModelNode cube5NodeG = new ModelNode("CubeWall(table body)", model2);
 
     //RIGHT ARM//
     //RIGHT ARM//
@@ -68,8 +73,9 @@ public class Glasses {
     NameNode rightArm = new NameNode("rightArm");
     m = Mat4Transform.scale(glassesScale*3f,glassesScale*0.5f,glassesScale*0.25f);
     m = Mat4.multiply(Mat4Transform.translate(glassesScale*-1.5f,0f,glassesScale*-2.75f), m);
-    TransformNode rightArmTransform = new TransformNode("translate(0,5,-5);scale(14,1,10)", m);
-    ModelNode cube6NodeG = new ModelNode("Cube(table body)", model2);
+    TransformNode rightArmTransform = new TransformNode("scale(" + glassesScale*3f + "," + glassesScale*0.5f + "," + glassesScale*0.25f + ")" +
+                                                         ";translate(" + glassesScale*-1.5f + ",0," + glassesScale*-2.75f + ")", m);
+    ModelNode cube6NodeG = new ModelNode("CubeWall(table body)", model2);
 
     // glassesRoot
     glassesRoot.addChild(middleBridge);

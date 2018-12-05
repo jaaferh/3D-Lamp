@@ -1,3 +1,10 @@
+/* Jaafer Hussain */
+/* I declare that this code is my own work */
+/* Author jhussain2@sheffield.ac.uk */
+
+
+
+
 import gmaths.*;
 
 import java.nio.*;
@@ -107,6 +114,8 @@ public class Anilamp_GLEventListener implements GLEventListener {
      rotateHeadAngleNew = rng(-50,50);
      pose = true;
      move = false;
+     dance = false;
+     spotLightOn();
      lampRoot.update();
    }
 
@@ -118,6 +127,8 @@ public class Anilamp_GLEventListener implements GLEventListener {
      rotateHeadAngleNew = 10;
      pose = true;
      move = false;
+     dance = false;
+     spotLightOn();
      lampRoot.update();
    }
 
@@ -129,7 +140,18 @@ public class Anilamp_GLEventListener implements GLEventListener {
      rotateHeadAngleNew = -30;
      pose = true;
      move = false;
+     dance = false;
      lampRoot.update();
+   }
+
+   public void dance() {
+     spotLightOff();
+     dance = true;
+   }
+
+   public void stopDancing() {
+
+     originPose();
    }
 
    /* Random number generator */
@@ -167,6 +189,8 @@ public class Anilamp_GLEventListener implements GLEventListener {
 
      move = true;
      pose = false;
+     dance = false;
+     spotLightOn();
      lampRoot.update();
    }
 
@@ -198,6 +222,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
   private Boolean pose = false;
   private Boolean move = false;
   private Boolean jumpV = false;
+  private Boolean dance = false;
 
   private Camera camera, spotCamera;
   private Mat4 perspective;
@@ -575,6 +600,7 @@ public class Anilamp_GLEventListener implements GLEventListener {
     danceFloor.render(gl);
     updateDiscoRotation();
 
+
     // pose, move and jumpV Booleans determine when to call their respective functions
     if (pose) {
       updatePose();
@@ -589,6 +615,10 @@ public class Anilamp_GLEventListener implements GLEventListener {
       jumpHorizontal();
     }
 
+    if (dance) {
+      updateLampDance();
+    }
+
   }
 
   /* Keeps the disco ball spinning */
@@ -598,6 +628,20 @@ public class Anilamp_GLEventListener implements GLEventListener {
     float rotateDiscoAngle = rotateDiscoAngleStart + (float)elapsedTime*50;
     disco.setRotateTransform(rotateDiscoAngle);
     discoRoot.update();
+  }
+
+  /* Makes the lamp dance using sine waves */
+  private void updateLampDance() {
+    double elapsedTime = getSeconds()-buttonTime;
+    rotateAllAngle = (rotateAllAngleStart*(float)Math.sin(elapsedTime*3f));
+    rotateSphereBodyAngle = (rotateSphereBodyStart*(float)Math.sin(elapsedTime*3f));
+    rotateUpperBranchAngle = (rotateUpperAngleStart*(float)Math.sin(elapsedTime*3f));
+    rotateHeadAngle = (rotateHeadAngleStart*(float)Math.sin(elapsedTime*20f));
+    rotateAll.setTransform(Mat4Transform.rotateAroundX(rotateAllAngle));
+    rotateSphereBody.setTransform(Mat4Transform.rotateAroundX(rotateSphereBodyAngle));
+    rotateUpperBranch.setTransform(Mat4Transform.rotateAroundX(rotateUpperBranchAngle));
+    rotateHead.setTransform(Mat4Transform.rotateAroundZ(rotateHeadAngle));
+    lampRoot.update(); // IMPORTANT – the scene graph has changed
   }
 
   /* Rotates the entire lamp to jumping target and prepares for jump through a crouching pose */

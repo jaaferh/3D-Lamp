@@ -1,5 +1,8 @@
+/* This class has been used from Dr Steve Maddock's tutorials */
+/* Some functions may have been added or adjusted */
+
 public final class TwoTriangles {
-  
+
   // ***************************************************
   /* THE DATA
    */
@@ -10,7 +13,7 @@ public final class TwoTriangles {
      0.5f, 0.0f,  0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f,  // bottom right
      0.5f, 0.0f, -0.5f,  0.0f, 1.0f, 0.0f,  1.0f, 1.0f   // top right
   };
-  
+
   public static final int[] indices = {         // Note that we start from 0!
       0, 1, 2,
       0, 2, 3

@@ -1,3 +1,6 @@
+/* This class has been used from Steve Maddock's tutorials */
+/* Some functions may have been added or adjusted */
+
 import com.jogamp.opengl.*;
 
 public class LightNode extends SGNode {

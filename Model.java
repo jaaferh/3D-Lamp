@@ -1,3 +1,6 @@
+/* This class has been used from Dr Steve Maddock's tutorials */
+/* Some functions may have been added or adjusted */
+
 import gmaths.*;
 import java.nio.*;
 import com.jogamp.common.nio.*;
@@ -49,6 +52,7 @@ public class Model {
   public void setLight(Light light) {
     this.light = light;
   }
+
   public void setLight2(Light light2) {
     this.light2 = light2;
   }
@@ -91,8 +95,9 @@ public class Model {
     shader.setVec3(gl, "material.specular", material.getSpecular());
     shader.setFloat(gl, "material.shininess", material.getShininess());
 
-    double elapsedTime = getSeconds() - startTime;
 
+    // Moving textures
+    double elapsedTime = getSeconds() - startTime;
 
     double t = elapsedTime*0.05;  // *0.1 slows it down a bit
     float offsetX = (float)(t - Math.floor(t));

@@ -1,3 +1,6 @@
+/* This class has been used from Dr Steve Maddock's tutorials */
+/* Some functions may have been added or adjusted */
+
 import com.jogamp.opengl.*;
 
 public class ModelNode extends SGNode {
@@ -6,7 +9,7 @@ public class ModelNode extends SGNode {
 
   public ModelNode(String name, Model m) {
     super(name);
-    model = m; 
+    model = m;
   }
 
   public void draw(GL3 gl) {
